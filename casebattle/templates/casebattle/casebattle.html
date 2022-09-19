@@ -1,0 +1,120 @@
+{% extends 'main.html' %}
+
+{% load static %}
+
+{% block content %}
+
+<div class="bet-toggle" id="betToggle"><button id="toggleBet"><img src="{% static 'images/AddPackage.png' %}" alt="Bet Area"></button></div>
+
+<section class="casebattle">
+    <div class="casebattle-container flex">
+        <section class="casebattle-games main-with-sidebar flex flex-column align-center container">
+            <div>{{error}}</div>
+
+            <h1>Active Rooms</h1>
+
+            <div class="cb-active-rooms">
+                {% for s in x.items reversed %}
+                    <div class="cb-active-room flex align-center">
+                        <div class="cb-active-room-users flex flex-column align-center">
+                            {% for user in s.1.users %}
+                                <img src="{{user}}" alt="Avatar">
+                            {% endfor %}
+                        </div>
+
+                        <div class="cb-package-image flex align-center">
+                            <div class="cb-package-image-container flex align-center justify-center"><img src="{% static s.1.package_img  %}" alt="package"></div>
+                        </div>
+
+                        <div class="cb-active-room-price flex align-center justify-center">
+                            <span class="flex">{{s.1.price}} <img src="{% static 'images/coin.svg' %}" alt="Coin"></span>
+                        </div>
+
+                        <div class="cb-join-room flex flex-column align-center justify-center">
+                            <a href="{% url 'casebattle:battle-room' s.0 %}" class="f-ss cb-join-room-link">Join</a>
+                            <a href="{% url 'casebattle:battle-room' s.0 %}" class="f-ss cb-watch-room-link">Watch</a>
+                        </div>
+                    </div>
+
+                    <div class="cb-active-room-mobile flex flex-column">
+                        <div class="cb-active-room-info flex justify-between">
+                            <div class="cb-active-room-users flex">
+                                {% for user in s.1.users %}
+                                    <img src="{{user}}" alt="Avatar">
+                                {% endfor %}
+                            </div>
+
+                            <div class="cb-active-room-package-cost">
+                                <span class="flex">{{s.1.price}} <img src="{% static 'images/coin.svg' %}" alt="Coin"></span>
+                            </div>
+                        </div>
+
+                        <div class="cb-active-room-package flex justify-center">
+                            <div class="cb-active-package-container flex justify-center align-center">
+                                <img src="{% static s.1.package_img  %}" alt="Package">
+                            </div>
+                        </div>
+
+                        <div class="cb-active-room-join flex justify-between align-center">
+                            <a href="{% url 'casebattle:battle-room' s.0 %}" class="f-ss cb-join-room-link">Join</a>
+                            <a href="{% url 'casebattle:battle-room' s.0 %}" class="f-ss cb-watch-room-link">Watch</a>
+                        </div>
+
+                    </div>
+                {% endfor %}
+            </div>
+
+
+            <!-- {% for s in x %}
+                {{s}}: {{s}}
+            {% endfor %} -->
+        </section>
+
+        <section class="casebattle-newgame bet-sidebar" id="betBar">
+            <div class="bet-sidebar-container flex flex-column">
+                <section class="sidebar-section packages flex flex-column">
+                    <span class="sidebar-title f-ss s-item">Choose Package</span>
+                    
+                    <form action="{% url 'casebattle:casebattle' %}" method="POST" id="cb-form">
+                        {% csrf_token %}
+                    
+                        {% for p in packages reversed %}
+                        <div>
+                        <input type="radio" class="cb-package" name="cb_package" id="package-{{p.id}}" value="{{p.id}}" data-price="{{p.price}}">
+                        <label for="package-{{p.id}}">
+                            <div class="package flex">
+                                <div class="package-image">
+                                    <img src="{% static p.avatar %}" alt="">
+                                </div>
+                                <div class="package-info">
+                                    <span>{{p.name}}</span>
+                                    <div><span>{{p.price}}</span><img src="{% static 'images/coin.svg' %}" alt="Coins"></div>
+                                </div>
+                            </div>
+                        </label>
+                    </div>
+                        {% endfor %}
+                    
+                    </form>
+                </section>
+            </div>
+
+            <section class="sidebar-confirm-bet sidebar-section">
+                <div class="package-cost flex justify-between">
+                    <div class="package-minus"><span>-</span></div>
+                    <div class="package-price"><span id="packagePrice">0.00</span><img src="{% static 'images/coin.svg' %}" alt="Coins"></div>
+                </div>
+                <input type="submit" value="Create Battle" class="sidebar-place-bet f-m" form="cb-form">
+            </section>
+        </section>
+    </div>
+</section>
+
+<script>
+    $(".cb-package").click(function(e){
+        e.stopPropagation();
+        document.querySelector('#packagePrice').innerHTML = $(this)[0].dataset.price
+    });
+</script>
+
+{% endblock content %}

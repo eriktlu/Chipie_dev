@@ -1,0 +1,936 @@
+{% extends 'main.html' %}
+
+{% load static %}
+
+{% load calc_odds %}
+{% load divide_two %}
+
+{% block content %}
+
+
+<section class="battleroom">
+    <div class="container">
+        <div class="casebattle-game flex flex-column">
+            <section class="casebattle-top flex justify-between align-center">
+                <div class="casebattle-top-left flex align-center">
+                    <a href="{% url 'casebattle:casebattle' %}" class="back"><img src="{% static 'images/back.svg' %}" alt="Back"></a>
+                </div>
+
+                <div class="casebattle-top-middle flex">
+                    <div class="casebattle-game-count" {% if playersData.game_started is True %} style="background: #4051F0" {% endif %}></div>
+                    <div class="casebattle-game-count" {% if playersData.game_started is True %} style="background: #4051F0" {% endif %}></div>
+                    <div class="casebattle-game-count" {% if playersData.game_started is True %} style="background: #4051F0" {% endif %}></div>
+                    <div class="casebattle-game-count" {% if playersData.game_started is True %} style="background: #4051F0" {% endif %}></div>
+                    <div class="casebattle-game-count" {% if playersData.game_started is True %} style="background: #4051F0" {% endif %}></div>
+                </div>
+
+                <div class="casebattle-top-right flex align-center">
+                    <div class="cb-share-room flex align-center" onclick="copyLink()"><img src="{% static 'images/share.png' %}" alt="Share"></div>
+                    <div class="flex align-center cb-battleroom-package-price"><span class="f-m">{{package_price}}</span><img class="coin" src="{% static 'images/coin.svg' %}" alt="Coins"></div>
+                    
+                    {% if room_creator.steam_id == request.user.social_auth.get.extra_data.player.steamid %}
+                        <form action="{% url 'casebattle:casebattle' %}" method="POST">
+                            {% csrf_token %}
+                            <div class="cb-delete-room flex align-center"><input type="image" src="{% static 'images/delete.png' %}"></div>
+                            <input type="hidden" name="delete" value="{{room_name}}" />
+                        </form>
+                    {% endif %}
+                </div>
+            </section>
+
+            <section class="casebattle-board flex" id="cbBoard">
+                <div class="cb-board-player flex justify-center align-center" id="player_1">
+                    <div class="player-area flex flex-column">
+                        {% if 1 in cb %}
+                            <div class="cb-player-board-info flex flex-column">
+                                {% if playersData.game_started is True %}
+                                <span class="cb-player-result f-m">{% if playersData.1.battle_result == "Win" %}<span style="color: #01DC69">WIN!</span>{% else %}<span style="color: #FF0047;">LOSE</span>{% endif %}</span>
+                                {% endif %}
+                                <img src="{{playersData.1.player_icon}}" alt="Player avatar">
+                                <span class="f-m">{{playersData.1.player_name}}</span>
+                                {% if playersData.game_started is True %}
+                                    <div class="cb-win-amount flex align-center">
+                                        <span class="cb-player-total-win f-m coin">{% if playersData.1.battle_result == "Win" %}<span style="color: #01DC69">{% divide playersData.total_value playersData.winner_count %}</span>{% else %}<span style="color: #FF0047;">0.00</span>{% endif %}</span>
+                                        <img src="{% static 'images/coin.svg' %}" alt="Coin">
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <!-- SKIN ROLLER -->
+                            <div class="skins">
+                                <div class="skins-container">
+
+                                </div>
+                            </div>
+                        {% else %}
+                            <button class="join cb-battle-join" onclick="addPlayer(1)">Join</button>
+                            <button class="join cb-battle-join-m" onclick="addPlayer(1)"><img src="{% static 'images/plus.png' %}" alt="+"></button>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="cb-board-player flex justify-center align-center" id="player_2">
+                    <div class="player-area flex flex-column">
+                        {% if 2 in cb %}
+                            <div class="cb-player-board-info flex flex-column">
+                                {% if playersData.game_started is True %}
+                                    <span class="cb-player-result f-m">{% if playersData.2.battle_result == "Win" %}<span style="color: #01DC69">WIN!</span>{% else %}<span style="color: #FF0047;">LOSE</span>{% endif %}</span>
+                                {% endif %}
+                                <img src="{{playersData.2.player_icon}}" alt="Player avatar">
+                                <span class="f-m">{{playersData.2.player_name}}</span>
+                                {% if playersData.game_started is True %}
+                                    <div class="cb-win-amount flex align-center">
+                                        <span class="cb-player-total-win f-m coin">{% if playersData.2.battle_result == "Win" %}<span style="color: #01DC69">{% divide playersData.total_value playersData.winner_count %}</span>{% else %}<span style="color: #FF0047;">0.00</span>{% endif %}</span>
+                                        <img src="{% static 'images/coin.svg' %}" alt="Coin">
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <!-- SKIN ROLLER -->
+                            <div class="skins">
+                                <div class="skins-container">
+
+                                </div>
+                            </div>
+                        
+                        {% else %}
+                            <button class="join cb-battle-join" onclick="addPlayer(2)">Join</button>
+                            <button class="join cb-battle-join-m" onclick="addPlayer(2)"><img src="{% static 'images/plus.png' %}" alt="+"></button>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="cb-board-player flex justify-center align-center" id="player_3">
+                    <div class="player-area flex flex-column">
+                        {% if 3 in cb %}
+                            <div class="cb-player-board-info flex flex-column">
+                                {% if playersData.game_started is True %}
+                                <span class="cb-player-result f-m">{% if playersData.3.battle_result == "Win" %}<span style="color: #01DC69">WIN!</span>{% else %}<span style="color: #FF0047;">LOSE</span>{% endif %}</span>
+                                {% endif %}
+                                <img src="{{playersData.3.player_icon}}" alt="Player avatar">
+                                <span class="f-m">{{playersData.3.player_name}}</span>
+                                {% if playersData.game_started is True %}
+                                    <div class="cb-win-amount flex align-center">
+                                        <span class="cb-player-total-win f-m coin">{% if playersData.3.battle_result == "Win" %}<span style="color: #01DC69">{% divide playersData.total_value playersData.winner_count %}</span>{% else %}<span style="color: #FF0047;">0.00</span>{% endif %}</span>
+                                        <img src="{% static 'images/coin.svg' %}" alt="Coin">
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <!-- SKIN ROLLER -->
+                            <div class="skins">
+                                <div class="skins-container">
+
+                                </div>
+                            </div>
+                            
+                        {% else %}
+                            <button class="join cb-battle-join" onclick="addPlayer(3)">Join</button>
+                            <button class="join cb-battle-join-m" onclick="addPlayer(3)"><img src="{% static 'images/plus.png' %}" alt="+"></button>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="cb-board-player flex justify-center align-center"id="player_4">
+                    <div class="player-area flex flex-column">
+                        {% if 4 in cb %}
+                            <div class="cb-player-board-info flex flex-column">
+                                {% if playersData.game_started is True %}
+                                <span class="cb-player-result f-m">{% if playersData.4.battle_result == "Win" %}<span style="color: #01DC69">WIN!</span>{% else %}<span style="color: #FF0047;">LOSE</span>{% endif %}</span>
+                                {% endif %}
+                                <img src="{{playersData.4.player_icon}}" alt="Player avatar">
+                                <span class="f-m">{{playersData.4.player_name}}</span>
+                                {% if playersData.game_started is True %}
+                                    <div class="cb-win-amount flex align-center">
+                                        <span class="cb-player-total-win f-m coin">{% if playersData.4.battle_result == "Win" %}<span style="color: #01DC69">{% divide playersData.total_value playersData.winner_count %}</span>{% else %}<span style="color: #FF0047;">0.00</span>{% endif %}</span>
+                                        <img src="{% static 'images/coin.svg' %}" alt="Coin">
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <!-- SKIN ROLLER -->
+                            <div class="skins">
+                                <div class="skins-container">
+
+                                </div>
+                            </div>
+                        {% else %}
+                            <button class="join cb-battle-join" onclick="addPlayer(4)">Join</button>
+                            <button class="join cb-battle-join-m" onclick="addPlayer(4)"><img src="{% static 'images/plus.png' %}" alt="+"></button>
+                        {% endif %}
+                    </div>
+                </div>
+            </section>
+
+            <section class="casebattle-players flex justify-between">
+                <div class="cb-player flex flex-column" id="player_1_inv">
+                    <div class="cb-player-info">
+                        {% if 1 in cb %}
+                            <div class="cb-bet-card flex align-center">
+                                <img src="{{playersData.1.player_icon}}" alt="User Profile">
+                                <span class="f-m">{{playersData.1.player_name}}</span>
+                                <div class="bet-value flex align-center">
+                                    <span class="f-m">{{playersData.1.battle_result_coins}}</span>
+                                    <img src="{% static 'images/coin.svg' %}" alt="Coin">
+                                </div>
+                            </div>
+                        {% else %}
+                            <div class="lds-ring"><div></div><div></div><div></div><div></div></div>
+                        {% endif %}
+                    </div>
+                
+                    <div class="cb-player-inv">
+                        {% if playersData.game_started is True %}
+                            <div class="cb-player-item flex">
+                                <div class="cb-player-item-image flex align-center"><img src="https://community.cloudflare.steamstatic.com/economy/image/-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXH5ApeO4YmlhxYQknCRvCo04DEVlxkKgpot7HxfDhnwMzJemkV08ykm4aOhOT9PLXQmlRc7cF4n-T--Y3nj1H6r0NoMG-iINDBe1NtZArYrlLokuru05Po6JWfynZl7yYmtn-JmUCxhQYMMLJKN_FGrA/360fx360f" alt="Skin image"></div>
+                                <div class="cb-player-item-info flex flex-column">
+                                    <span class="cb-item-exterior f-xs">{{playersData.1.items.1.item_exterior}}</span>
+                                    <span class="f-ss" style="color: {{playersData.1.items.1.item_color}}">{{playersData.1.items.1.item_skinline}}</span>
+                                    <span class="f-ss">{{playersData.1.items.1.item_names}}</span>
+                                    <div class="flex align-center f-ss"><span class="coin">{{playersData.1.items.1.item_values}}</span><img src="{% static 'images/coin.svg' %}" alt="Coins" class="coin"></div>
+                                </div>
+                            </div>
+
+                            <div class="cb-player-item flex">
+                                <div class="cb-player-item-image flex align-center"><img src="https://community.cloudflare.steamstatic.com/economy/image/-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXH5ApeO4YmlhxYQknCRvCo04DEVlxkKgpot7HxfDhnwMzJemkV08ykm4aOhOT9PLXQmlRc7cF4n-T--Y3nj1H6r0NoMG-iINDBe1NtZArYrlLokuru05Po6JWfynZl7yYmtn-JmUCxhQYMMLJKN_FGrA/360fx360f" alt="Skin image"></div>
+                                <div class="cb-player-item-info flex flex-column">
+                                    <span class="cb-item-exterior f-xs">{{playersData.1.items.2.item_exterior}}</span>
+                                    <span class="f-ss" style="color: {{playersData.1.items.2.item_color}}">{{playersData.1.items.2.item_skinline}}</span>
+                                    <span class="f-ss">{{playersData.1.items.2.item_names}}</span>
+                                    <div class="flex align-center f-ss"><span class="coin">{{playersData.1.items.2.item_values}}</span><img src="{% static 'images/coin.svg' %}" alt="Coins" class="coin"></div>
+                                </div>
+                            </div>
+
+                            <div class="cb-player-item flex">
+                                <div class="cb-player-item-image flex align-center"><img src="https://community.cloudflare.steamstatic.com/economy/image/-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXH5ApeO4YmlhxYQknCRvCo04DEVlxkKgpot7HxfDhnwMzJemkV08ykm4aOhOT9PLXQmlRc7cF4n-T--Y3nj1H6r0NoMG-iINDBe1NtZArYrlLokuru05Po6JWfynZl7yYmtn-JmUCxhQYMMLJKN_FGrA/360fx360f" alt="Skin image"></div>
+                                <div class="cb-player-item-info flex flex-column">
+                                    <span class="cb-item-exterior f-xs">{{playersData.1.items.3.item_exterior}}</span>
+                                    <span class="f-ss" style="color: {{playersData.1.items.3.item_color}}">{{playersData.1.items.3.item_skinline}}</span>
+                                    <span class="f-ss">{{playersData.1.items.3.item_names}}</span>
+                                    <div class="flex align-center f-ss"><span class="coin">{{playersData.1.items.3.item_values}}</span><img src="{% static 'images/coin.svg' %}" alt="Coins" class="coin"></div>
+                                </div>
+                            </div>
+
+                            <div class="cb-player-item flex">
+                                <div class="cb-player-item-image flex align-center"><img src="https://community.cloudflare.steamstatic.com/economy/image/-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXH5ApeO4YmlhxYQknCRvCo04DEVlxkKgpot7HxfDhnwMzJemkV08ykm4aOhOT9PLXQmlRc7cF4n-T--Y3nj1H6r0NoMG-iINDBe1NtZArYrlLokuru05Po6JWfynZl7yYmtn-JmUCxhQYMMLJKN_FGrA/360fx360f" alt="Skin image"></div>
+                                <div class="cb-player-item-info flex flex-column">
+                                    <span class="cb-item-exterior f-xs">{{playersData.1.items.4.item_exterior}}</span>
+                                    <span class="f-ss" style="color: {{playersData.1.items.4.item_color}}">{{playersData.1.items.4.item_skinline}}</span>
+                                    <span class="f-ss">{{playersData.1.items.4.item_names}}</span>
+                                    <div class="flex align-center f-ss"><span class="coin">{{playersData.1.items.4.item_values}}</span><img src="{% static 'images/coin.svg' %}" alt="Coins" class="coin"></div>
+                                </div>
+                            </div>
+
+                            <div class="cb-player-item flex">
+                                <div class="cb-player-item-image flex align-center"><img src="https://community.cloudflare.steamstatic.com/economy/image/-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXH5ApeO4YmlhxYQknCRvCo04DEVlxkKgpot7HxfDhnwMzJemkV08ykm4aOhOT9PLXQmlRc7cF4n-T--Y3nj1H6r0NoMG-iINDBe1NtZArYrlLokuru05Po6JWfynZl7yYmtn-JmUCxhQYMMLJKN_FGrA/360fx360f" alt="Skin image"></div>
+                                <div class="cb-player-item-info flex flex-column">
+                                    <span class="cb-item-exterior f-xs">{{playersData.1.items.5.item_exterior}}</span>
+                                    <span class="f-ss" style="color: {{playersData.1.items.5.item_color}}">{{playersData.1.items.5.item_skinline}}</span>
+                                    <span class="f-ss">{{playersData.1.items.5.item_names}}</span>
+                                    <div class="flex align-center f-ss"><span class="coin">{{playersData.1.items.5.item_values}}</span><img src="{% static 'images/coin.svg' %}" alt="Coins" class="coin"></div>
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+
+                </div>
+
+                <div class="cb-player flex flex-column" id="player_2_inv">
+                    <div class="cb-player-info">
+                        
+                        <div class="cb-bet-card flex align-center">
+                            {% if 2 in cb %}
+                                <img src="{{playersData.2.player_icon}}" alt="User Profile">
+                                <span class="f-m">{{playersData.2.player_name}}</span>
+                                <div class="bet-value flex align-center">
+                                    <span class="f-m">{{playersData.2.battle_result_coins}}</span>
+                                    <img src="{% static 'images/coin.svg' %}" alt="Coin">
+                                </div>
+                            {% else %}
+                                <div class="loader"></div>
+                            {% endif %}
+                        </div> 
+                    </div>
+                
+                    <div class="cb-player-inv">
+                        {% if playersData.game_started is True %}
+                            <div class="cb-player-item flex">
+                                <div class="cb-player-item-image flex align-center"><img src="https://community.cloudflare.steamstatic.com/economy/image/-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXH5ApeO4YmlhxYQknCRvCo04DEVlxkKgpot7HxfDhnwMzJemkV08ykm4aOhOT9PLXQmlRc7cF4n-T--Y3nj1H6r0NoMG-iINDBe1NtZArYrlLokuru05Po6JWfynZl7yYmtn-JmUCxhQYMMLJKN_FGrA/360fx360f" alt="Skin image"></div>
+                                <div class="cb-player-item-info flex flex-column">
+                                    <span class="cb-item-exterior f-xs">{{playersData.2.items.1.item_exterior}}</span>
+                                    <span class="f-ss" style="color: {{playersData.2.items.1.item_color}}">{{playersData.2.items.1.item_skinline}}</span>
+                                    <span class="f-ss">{{playersData.2.items.1.item_names}}</span>
+                                    <div class="flex align-center f-ss"><span class="coin">{{playersData.2.items.1.item_values}}</span><img src="{% static 'images/coin.svg' %}" alt="Coins" class="coin"></div>
+                                </div>
+                            </div>
+
+                            <div class="cb-player-item flex">
+                                <div class="cb-player-item-image flex align-center"><img src="https://community.cloudflare.steamstatic.com/economy/image/-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXH5ApeO4YmlhxYQknCRvCo04DEVlxkKgpot7HxfDhnwMzJemkV08ykm4aOhOT9PLXQmlRc7cF4n-T--Y3nj1H6r0NoMG-iINDBe1NtZArYrlLokuru05Po6JWfynZl7yYmtn-JmUCxhQYMMLJKN_FGrA/360fx360f" alt="Skin image"></div>
+                                <div class="cb-player-item-info flex flex-column">
+                                    <span class="cb-item-exterior f-xs">{{playersData.2.items.2.item_exterior}}</span>
+                                    <span class="f-ss" style="color: {{playersData.2.items.2.item_color}}">{{playersData.2.items.2.item_skinline}}</span>
+                                    <span class="f-ss">{{playersData.2.items.2.item_names}}</span>
+                                    <div class="flex align-center f-ss"><span class="coin">{{playersData.2.items.2.item_values}}</span><img src="{% static 'images/coin.svg' %}" alt="Coins" class="coin"></div>
+                                </div>
+                            </div>
+
+                            <div class="cb-player-item flex">
+                                <div class="cb-player-item-image flex align-center"><img src="https://community.cloudflare.steamstatic.com/economy/image/-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXH5ApeO4YmlhxYQknCRvCo04DEVlxkKgpot7HxfDhnwMzJemkV08ykm4aOhOT9PLXQmlRc7cF4n-T--Y3nj1H6r0NoMG-iINDBe1NtZArYrlLokuru05Po6JWfynZl7yYmtn-JmUCxhQYMMLJKN_FGrA/360fx360f" alt="Skin image"></div>
+                                <div class="cb-player-item-info flex flex-column">
+                                    <span class="cb-item-exterior f-xs">{{playersData.2.items.3.item_exterior}}</span>
+                                    <span class="f-ss" style="color: {{playersData.2.items.3.item_color}}">{{playersData.2.items.3.item_skinline}}</span>
+                                    <span class="f-ss">{{playersData.2.items.3.item_names}}</span>
+                                    <div class="flex align-center f-ss"><span class="coin">{{playersData.2.items.3.item_values}}</span><img src="{% static 'images/coin.svg' %}" alt="Coins" class="coin"></div>
+                                </div>
+                            </div>
+
+                            <div class="cb-player-item flex">
+                                <div class="cb-player-item-image flex align-center"><img src="https://community.cloudflare.steamstatic.com/economy/image/-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXH5ApeO4YmlhxYQknCRvCo04DEVlxkKgpot7HxfDhnwMzJemkV08ykm4aOhOT9PLXQmlRc7cF4n-T--Y3nj1H6r0NoMG-iINDBe1NtZArYrlLokuru05Po6JWfynZl7yYmtn-JmUCxhQYMMLJKN_FGrA/360fx360f" alt="Skin image"></div>
+                                <div class="cb-player-item-info flex flex-column">
+                                    <span class="cb-item-exterior f-xs">{{playersData.2.items.4.item_exterior}}</span>
+                                    <span class="f-ss" style="color: {{playersData.2.items.4.item_color}}">{{playersData.2.items.4.item_skinline}}</span>
+                                    <span class="f-ss">{{playersData.2.items.4.item_names}}</span>
+                                    <div class="flex align-center f-ss"><span class="coin">{{playersData.2.items.4.item_values}}</span><img src="{% static 'images/coin.svg' %}" alt="Coins" class="coin"></div>
+                                </div>
+                            </div>
+
+                            <div class="cb-player-item flex">
+                                <div class="cb-player-item-image flex align-center"><img src="https://community.cloudflare.steamstatic.com/economy/image/-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXH5ApeO4YmlhxYQknCRvCo04DEVlxkKgpot7HxfDhnwMzJemkV08ykm4aOhOT9PLXQmlRc7cF4n-T--Y3nj1H6r0NoMG-iINDBe1NtZArYrlLokuru05Po6JWfynZl7yYmtn-JmUCxhQYMMLJKN_FGrA/360fx360f" alt="Skin image"></div>
+                                <div class="cb-player-item-info flex flex-column">
+                                    <span class="cb-item-exterior f-xs">{{playersData.2.items.5.item_exterior}}</span>
+                                    <span class="f-ss" style="color: {{playersData.2.items.5.item_color}}">{{playersData.2.items.5.item_skinline}}</span>
+                                    <span class="f-ss">{{playersData.2.items.5.item_names}}</span>
+                                    <div class="flex align-center f-ss"><span class="coin">{{playersData.2.items.5.item_values}}</span><img src="{% static 'images/coin.svg' %}" alt="Coins" class="coin"></div>
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="cb-player flex flex-column" id="player_3_inv">
+                    <div class="cb-player-info">
+                        <div class="cb-bet-card flex align-center">
+                            {% if 3 in cb %}
+                                <img src="{{playersData.3.player_icon}}" alt="User Profile">
+                                <span class="f-m">{{playersData.3.player_name}}</span>
+                                <div class="bet-value flex align-center">
+                                    <span class="f-m">{{playersData.3.battle_result_coins}}</span>
+                                    <img src="{% static 'images/coin.svg' %}" alt="Coin">
+                                </div>
+                            {% else %}
+                                <div class="loader"></div>
+                            {% endif %}
+                        </div>
+                    </div>
+                
+                    <div class="cb-player-inv">
+                        {% if playersData.game_started is True %}
+                            <div class="cb-player-item flex">
+                                <div class="cb-player-item-image flex align-center"><img src="https://community.cloudflare.steamstatic.com/economy/image/-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXH5ApeO4YmlhxYQknCRvCo04DEVlxkKgpot7HxfDhnwMzJemkV08ykm4aOhOT9PLXQmlRc7cF4n-T--Y3nj1H6r0NoMG-iINDBe1NtZArYrlLokuru05Po6JWfynZl7yYmtn-JmUCxhQYMMLJKN_FGrA/360fx360f" alt="Skin image"></div>
+                                <div class="cb-player-item-info flex flex-column">
+                                    <span class="cb-item-exterior f-xs">{{playersData.3.items.1.item_exterior}}</span>
+                                    <span class="f-ss" style="color: {{playersData.3.items.1.item_color}}">{{playersData.3.items.1.item_skinline}}</span>
+                                    <span class="f-ss">{{playersData.3.items.1.item_names}}</span>
+                                    <div class="flex align-center f-ss"><span class="coin">{{playersData.3.items.1.item_values}}</span><img src="{% static 'images/coin.svg' %}" alt="Coins" class="coin"></div>
+                                </div>
+                            </div>
+
+                            <div class="cb-player-item flex">
+                                <div class="cb-player-item-image flex align-center"><img src="https://community.cloudflare.steamstatic.com/economy/image/-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXH5ApeO4YmlhxYQknCRvCo04DEVlxkKgpot7HxfDhnwMzJemkV08ykm4aOhOT9PLXQmlRc7cF4n-T--Y3nj1H6r0NoMG-iINDBe1NtZArYrlLokuru05Po6JWfynZl7yYmtn-JmUCxhQYMMLJKN_FGrA/360fx360f" alt="Skin image"></div>
+                                <div class="cb-player-item-info flex flex-column">
+                                    <span class="cb-item-exterior f-xs">{{playersData.3.items.2.item_exterior}}</span>
+                                    <span class="f-ss" style="color: {{playersData.3.items.2.item_color}}">{{playersData.3.items.2.item_skinline}}</span>
+                                    <span class="f-ss">{{playersData.3.items.2.item_names}}</span>
+                                    <div class="flex align-center f-ss"><span class="coin">{{playersData.3.items.2.item_values}}</span><img src="{% static 'images/coin.svg' %}" alt="Coins" class="coin"></div>
+                                </div>
+                            </div>
+
+                            <div class="cb-player-item flex">
+                                <div class="cb-player-item-image flex align-center"><img src="https://community.cloudflare.steamstatic.com/economy/image/-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXH5ApeO4YmlhxYQknCRvCo04DEVlxkKgpot7HxfDhnwMzJemkV08ykm4aOhOT9PLXQmlRc7cF4n-T--Y3nj1H6r0NoMG-iINDBe1NtZArYrlLokuru05Po6JWfynZl7yYmtn-JmUCxhQYMMLJKN_FGrA/360fx360f" alt="Skin image"></div>
+                                <div class="cb-player-item-info flex flex-column">
+                                    <span class="cb-item-exterior f-xs">{{playersData.3.items.3.item_exterior}}</span>
+                                    <span class="f-ss" style="color: {{playersData.3.items.3.item_color}}">{{playersData.3.items.3.item_skinline}}</span>
+                                    <span class="f-ss">{{playersData.3.items.3.item_names}}</span>
+                                    <div class="flex align-center f-ss"><span class="coin">{{playersData.3.items.3.item_values}}</span><img src="{% static 'images/coin.svg' %}" alt="Coins" class="coin"></div>
+                                </div>
+                            </div>
+
+                            <div class="cb-player-item flex">
+                                <div class="cb-player-item-image flex align-center"><img src="https://community.cloudflare.steamstatic.com/economy/image/-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXH5ApeO4YmlhxYQknCRvCo04DEVlxkKgpot7HxfDhnwMzJemkV08ykm4aOhOT9PLXQmlRc7cF4n-T--Y3nj1H6r0NoMG-iINDBe1NtZArYrlLokuru05Po6JWfynZl7yYmtn-JmUCxhQYMMLJKN_FGrA/360fx360f" alt="Skin image"></div>
+                                <div class="cb-player-item-info flex flex-column">
+                                    <span class="cb-item-exterior f-xs">{{playersData.3.items.4.item_exterior}}</span>
+                                    <span class="f-ss" style="color: {{playersData.3.items.4.item_color}}">{{playersData.3.items.4.item_skinline}}</span>
+                                    <span class="f-ss">{{playersData.3.items.4.item_names}}</span>
+                                    <div class="flex align-center f-ss"><span class="coin">{{playersData.3.items.4.item_values}}</span><img src="{% static 'images/coin.svg' %}" alt="Coins" class="coin"></div>
+                                </div>
+                            </div>
+
+                            <div class="cb-player-item flex">
+                                <div class="cb-player-item-image flex align-center"><img src="https://community.cloudflare.steamstatic.com/economy/image/-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXH5ApeO4YmlhxYQknCRvCo04DEVlxkKgpot7HxfDhnwMzJemkV08ykm4aOhOT9PLXQmlRc7cF4n-T--Y3nj1H6r0NoMG-iINDBe1NtZArYrlLokuru05Po6JWfynZl7yYmtn-JmUCxhQYMMLJKN_FGrA/360fx360f" alt="Skin image"></div>
+                                <div class="cb-player-item-info flex flex-column">
+                                    <span class="cb-item-exterior f-xs">{{playersData.3.items.5.item_exterior}}</span>
+                                    <span class="f-ss" style="color: {{playersData.3.items.5.item_color}}">{{playersData.3.items.5.item_skinline}}</span>
+                                    <span class="f-ss">{{playersData.3.items.5.item_names}}</span>
+                                    <div class="flex align-center f-ss"><span class="coin">{{playersData.3.items.5.item_values}}</span><img src="{% static 'images/coin.svg' %}" alt="Coins" class="coin"></div>
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="cb-player flex flex-column" id="player_4_inv">
+                    <div class="cb-player-info">
+                        <div class="cb-bet-card flex align-center">
+                            {% if 4 in cb %}
+                                <img src="{{playersData.4.player_icon}}" alt="User Profile">
+                                <span class="f-m">{{playersData.4.player_name}}</span>
+                                <div class="bet-value flex align-center">
+                                    <span class="f-m">{{playersData.4.battle_result_coins}}</span>
+                                    <img src="{% static 'images/coin.svg' %}" alt="Coin">
+                                </div>
+                            {% else %}
+                                <div class="loader"></div>
+                            {% endif %}
+                        </div>
+                    </div>
+                
+                    <div class="cb-player-inv">
+                        {% if playersData.game_started is True %}
+                            <div class="cb-player-item flex">
+                                <div class="cb-player-item-image flex align-center"><img src="https://community.cloudflare.steamstatic.com/economy/image/-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXH5ApeO4YmlhxYQknCRvCo04DEVlxkKgpot7HxfDhnwMzJemkV08ykm4aOhOT9PLXQmlRc7cF4n-T--Y3nj1H6r0NoMG-iINDBe1NtZArYrlLokuru05Po6JWfynZl7yYmtn-JmUCxhQYMMLJKN_FGrA/360fx360f" alt="Skin image"></div>
+                                <div class="cb-player-item-info flex flex-column">
+                                    <span class="cb-item-exterior f-xs">{{playersData.4.items.1.item_exterior}}</span>
+                                    <span class="f-ss" style="color: {{playersData.4.items.1.item_color}}">{{playersData.4.items.1.item_skinline}}</span>
+                                    <span class="f-ss">{{playersData.4.items.1.item_names}}</span>
+                                    <div class="flex align-center f-ss"><span class="coin">{{playersData.4.items.1.item_values}}</span><img src="{% static 'images/coin.svg' %}" alt="Coins" class="coin"></div>
+                                </div>
+                            </div>
+
+                            <div class="cb-player-item flex">
+                                <div class="cb-player-item-image flex align-center"><img src="https://community.cloudflare.steamstatic.com/economy/image/-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXH5ApeO4YmlhxYQknCRvCo04DEVlxkKgpot7HxfDhnwMzJemkV08ykm4aOhOT9PLXQmlRc7cF4n-T--Y3nj1H6r0NoMG-iINDBe1NtZArYrlLokuru05Po6JWfynZl7yYmtn-JmUCxhQYMMLJKN_FGrA/360fx360f" alt="Skin image"></div>
+                                <div class="cb-player-item-info flex flex-column">
+                                    <span class="cb-item-exterior f-xs">{{playersData.4.items.2.item_exterior}}</span>
+                                    <span class="f-ss" style="color: {{playersData.4.items.2.item_color}}">{{playersData.4.items.2.item_skinline}}</span>
+                                    <span class="f-ss">{{playersData.4.items.2.item_names}}</span>
+                                    <div class="flex align-center f-ss"><span class="coin">{{playersData.4.items.2.item_values}}</span><img src="{% static 'images/coin.svg' %}" alt="Coins" class="coin"></div>
+                                </div>
+                            </div>
+
+                            <div class="cb-player-item flex">
+                                <div class="cb-player-item-image flex align-center"><img src="https://community.cloudflare.steamstatic.com/economy/image/-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXH5ApeO4YmlhxYQknCRvCo04DEVlxkKgpot7HxfDhnwMzJemkV08ykm4aOhOT9PLXQmlRc7cF4n-T--Y3nj1H6r0NoMG-iINDBe1NtZArYrlLokuru05Po6JWfynZl7yYmtn-JmUCxhQYMMLJKN_FGrA/360fx360f" alt="Skin image"></div>
+                                <div class="cb-player-item-info flex flex-column">
+                                    <span class="cb-item-exterior f-xs">{{playersData.4.items.3.item_exterior}}</span>
+                                    <span class="f-ss" style="color: {{playersData.4.items.3.item_color}}">{{playersData.4.items.3.item_skinline}}</span>
+                                    <span class="f-ss">{{playersData.4.items.3.item_names}}</span>
+                                    <div class="flex align-center f-ss"><span class="coin">{{playersData.4.items.3.item_values}}</span><img src="{% static 'images/coin.svg' %}" alt="Coins" class="coin"></div>
+                                </div>
+                            </div>
+
+                            <div class="cb-player-item flex">
+                                <div class="cb-player-item-image flex align-center"><img src="https://community.cloudflare.steamstatic.com/economy/image/-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXH5ApeO4YmlhxYQknCRvCo04DEVlxkKgpot7HxfDhnwMzJemkV08ykm4aOhOT9PLXQmlRc7cF4n-T--Y3nj1H6r0NoMG-iINDBe1NtZArYrlLokuru05Po6JWfynZl7yYmtn-JmUCxhQYMMLJKN_FGrA/360fx360f" alt="Skin image"></div>
+                                <div class="cb-player-item-info flex flex-column">
+                                    <span class="cb-item-exterior f-xs">{{playersData.4.items.4.item_exterior}}</span>
+                                    <span class="f-ss" style="color: {{playersData.4.items.4.item_color}}">{{playersData.4.items.4.item_skinline}}</span>
+                                    <span class="f-ss">{{playersData.4.items.4.item_names}}</span>
+                                    <div class="flex align-center f-ss"><span class="coin">{{playersData.4.items.4.item_values}}</span><img src="{% static 'images/coin.svg' %}" alt="Coins" class="coin"></div>
+                                </div>
+                            </div>
+
+                            <div class="cb-player-item flex">
+                                <div class="cb-player-item-image flex align-center"><img src="https://community.cloudflare.steamstatic.com/economy/image/-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXH5ApeO4YmlhxYQknCRvCo04DEVlxkKgpot7HxfDhnwMzJemkV08ykm4aOhOT9PLXQmlRc7cF4n-T--Y3nj1H6r0NoMG-iINDBe1NtZArYrlLokuru05Po6JWfynZl7yYmtn-JmUCxhQYMMLJKN_FGrA/360fx360f" alt="Skin image"></div>
+                                <div class="cb-player-item-info flex flex-column">
+                                    <span class="cb-item-exterior f-xs">{{playersData.4.items.5.item_exterior}}</span>
+                                    <span class="f-ss" style="color: {{playersData.4.items.5.item_color}}">{{playersData.4.items.5.item_skinline}}</span>
+                                    <span class="f-ss">{{playersData.4.items.5.item_names}}</span>
+                                    <div class="flex align-center f-ss"><span class="coin">{{playersData.4.items.5.item_values}}</span><img src="{% static 'images/coin.svg' %}" alt="Coins" class="coin"></div>
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+</section>
+
+
+
+
+
+
+
+<!-- <a href="{% url 'casebattle:casebattle' %}">Back</a>
+<br>
+<button onclick="copyLink()">Invite friends</button>
+<br>
+{% if request.user == room_creator %}
+    <form action="{% url 'casebattle:casebattle' %}" method="POST">
+        {% csrf_token %}
+        <input type="hidden" id="delete-room" name="delete_room" value="{{room_name}}">
+
+        <input type="submit" value="Delete Room">
+    </form>
+{% endif %}
+
+<!-- <p>{{playersData}}</p> -->
+{% comment %}
+<h2>Battle Room</h2>
+<p>Room name: {{room_name}}</p>
+{% for hp in h %}
+<p>{{hp.user}}</p>
+{% endfor %}
+
+<p>Chest: {{test.name}} {{test.value}}$ per chest</p>
+
+<section>
+    <div class="players" style="display: flex;">
+        <div class="player" id="player_1" style="width: 25%; display: flex; flex-direction: column;">
+            <div class="play-area" style="display: flex; justify-content: center; align-items: center; flex-direction: column; height: 200px;">
+                <div class="player-inf">
+                {% if 1 in cb %}
+                    <!-- Ikoon -->
+                    <img src="{{playersData.1.player_icon}}" alt="Player avatar">
+                    <p>{{playersData.1.player_name}}</p>
+                {% else %}
+                    <button style="height: 50px; width: 50px;" onclick="addPlayer(1)">Join</button>
+                {% endif %}
+                </div>
+                <span class="battle-win-amount"><span class="battle-result">{{playersData.1.battle_result}}</span> {% if playersData.1.battle_result == "Win" %}{% divide playersData.total_value playersData.winner_count %}{% endif %}</span>
+            </div>
+
+            <!-- SKIN ROLLER -->
+            <div class="skins" style="overflow: hidden; height: 200px; border: 1px solid black;">
+                <div class="skins-container">
+
+                </div>
+            </div>
+            
+            <div class="rolled-skins">
+                <p class="total-value">{% if game_started is True %}Total: {{playersData.1.battle_result_coins}}${% endif %}</p>
+                <div class="item-slot-1">
+                    <span class="item-name">{% if game_started is True %}{{playersData.1.rolls_names.0}}: {% endif %}</span>
+                    <span class="item-value">{% if game_started is True %}{{playersData.1.rolls_values.0}}${% endif %}</span>
+                </div>
+                <div class="item-slot-2">
+                    <span class="item-name">{% if game_started is True %}{{playersData.1.rolls_names.1}}: {% endif %}</span>
+                    <span class="item-value">{% if game_started is True %}{{playersData.1.rolls_values.1}}${% endif %}</span>
+                </div>
+                <div class="item-slot-3">
+                    <span class="item-name">{% if game_started is True %}{{playersData.1.rolls_names.2}}: {% endif %}</span>
+                    <span class="item-value">{% if game_started is True %}{{playersData.1.rolls_values.2}}${% endif %}</span>
+                </div>
+                <div class="item-slot-4">
+                    <span class="item-name">{% if game_started is True %}{{playersData.1.rolls_names.3}}: {% endif %}</span>
+                    <span class="item-value">{% if game_started is True %}{{playersData.1.rolls_values.3}}${% endif %}</span>
+                </div>
+                <div class="item-slot-5">
+                    <span class="item-name">{% if game_started is True %}{{playersData.1.rolls_names.4}}: {% endif %}</span>
+                    <span class="item-value">{% if game_started is True %}{{playersData.1.rolls_values.4}}${% endif %}</span>
+                </div>
+            </div>
+        </div>
+        <div class="player" id="player_2" style="width: 25%; display: flex; flex-direction: column;">
+            <div class="play-area" style="display: flex; justify-content: center; align-items: center; flex-direction: column; height: 200px;">
+                <div class="player-inf">
+                {% if 2 in cb %}
+                    <!-- Ikoon -->
+                    <img src="{{playersData.2.player_icon}}" alt="Player avatar">
+                    <p>{{playersData.2.player_name}}</p>
+                {% else %}
+                    <button style="height: 50px; width: 50px;" onclick="addPlayer(2)">Join</button>
+                {% endif %}
+                </div>
+                <span class="battle-win-amount"><span class="battle-result">{{playersData.2.battle_result}}</span> {% if playersData.2.battle_result == "Win" %}{% divide playersData.total_value playersData.winner_count %}{% endif %}</span>
+            </div>
+
+            <!-- SKIN ROLLER -->
+            <div class="skins" style="overflow: hidden; height: 200px; border: 1px solid black;">
+                <div class="skins-container">
+
+                </div>
+            </div>
+            
+            <div class="rolled-skins">
+                <p class="total-value">{% if game_started is True %}Total: {{playersData.2.battle_result_coins}}${% endif %}</p>
+                <div class="item-slot-1">
+                    <span class="item-name">{% if game_started is True %}{{playersData.2.rolls_names.0}}: {% endif %}</span>
+                    <span class="item-value">{% if game_started is True %}{{playersData.2.rolls_values.0}}${% endif %}</span>
+                </div>
+                <div class="item-slot-2">
+                    <span class="item-name">{% if game_started is True %}{{playersData.2.rolls_names.1}}: {% endif %}</span>
+                    <span class="item-value">{% if game_started is True %}{{playersData.2.rolls_values.1}}${% endif %}</span>
+                </div>
+                <div class="item-slot-3">
+                    <span class="item-name">{% if game_started is True %}{{playersData.2.rolls_names.2}}: {% endif %}</span>
+                    <span class="item-value">{% if game_started is True %}{{playersData.2.rolls_values.2}}${% endif %}</span>
+                </div>
+                <div class="item-slot-4">
+                    <span class="item-name">{% if game_started is True %}{{playersData.2.rolls_names.3}}: {% endif %}</span>
+                    <span class="item-value">{% if game_started is True %}{{playersData.2.rolls_values.3}}${% endif %}</span>
+                </div>
+                <div class="item-slot-5">
+                    <span class="item-name">{% if game_started is True %}{{playersData.2.rolls_names.4}}: {% endif %}</span>
+                    <span class="item-value">{% if game_started is True %}{{playersData.2.rolls_values.4}}${% endif %}</span>
+                </div>
+            </div>
+        </div>
+        <div class="player" id="player_3" style="width: 25%; display: flex; flex-direction: column;">
+            <div class="play-area" style="display: flex; justify-content: center; align-items: center; flex-direction: column; height: 200px;">
+                <div class="player-inf">
+                {% if 3 in cb %}
+                    <!-- Ikoon -->
+                    
+                        <img src="{{playersData.3.player_icon}}" alt="Player avatar">
+                        <p>{{playersData.3.player_name}}</p>
+                    
+                {% else %}
+                    <button style="height: 50px; width: 50px;" onclick="addPlayer(3)">Join</button>
+                {% endif %}
+                </div>
+                <span class="battle-win-amount"><span class="battle-result">{{playersData.3.battle_result}}</span> {% if playersData.3.battle_result == "Win" %}{% divide playersData.total_value playersData.winner_count %}{% endif %}</span>
+            </div>
+
+
+            <!-- SKIN ROLLER -->
+            <div class="skins" style="overflow: hidden; height: 200px; border: 1px solid black;">
+                <div class="skins-container">
+
+                </div>
+            </div>
+            
+            <div class="rolled-skins">
+                <p class="total-value">{% if game_started is True %}Total: {{playersData.3.battle_result_coins}}${% endif %}</p>
+                <div class="item-slot-1">
+                    <span class="item-name">{% if game_started is True %}{{playersData.3.rolls_names.0}}: {% endif %}</span>
+                    <span class="item-value">{% if game_started is True %}{{playersData.3.rolls_values.0}}${% endif %}</span>
+                </div>
+                <div class="item-slot-2">
+                    <span class="item-name">{% if game_started is True %}{{playersData.3.rolls_names.1}}: {% endif %}</span>
+                    <span class="item-value">{% if game_started is True %}{{playersData.3.rolls_values.1}}${% endif %}</span>
+                </div>
+                <div class="item-slot-3">
+                    <span class="item-name">{% if game_started is True %}{{playersData.3.rolls_names.2}}: {% endif %}</span>
+                    <span class="item-value">{% if game_started is True %}{{playersData.3.rolls_values.2}}${% endif %}</span>
+                </div>
+                <div class="item-slot-4">
+                    <span class="item-name">{% if game_started is True %}{{playersData.3.rolls_names.3}}: {% endif %}</span>
+                    <span class="item-value">{% if game_started is True %}{{playersData.3.rolls_values.3}}${% endif %}</span>
+                </div>
+                <div class="item-slot-5">
+                    <span class="item-name">{% if game_started is True %}{{playersData.3.rolls_names.4}}: {% endif %}</span>
+                    <span class="item-value">{% if game_started is True %}{{playersData.3.rolls_values.4}}${% endif %}</span>
+                </div>
+            </div>
+        </div>
+        <div class="player" id="player_4" style="width: 25%; display: flex; flex-direction: column;">
+            <div class="play-area" style="display: flex; justify-content: center; align-items: center; flex-direction: column; height: 200px;">
+                <div class="player-inf">
+                {% if 4 in cb %}
+                    <!-- Ikoon -->
+                    
+                    <img src="{{playersData.4.player_icon}}" alt="Player avatar">
+                    <p>{{playersData.4.player_name}}</p>
+                {% else %}
+                    <button style="height: 50px; width: 50px;" onclick="addPlayer(4)">Join</button>
+                {% endif %}
+                </div>
+                <span class="battle-win-amount"><span class="battle-result">{{playersData.4.battle_result}}</span> {% if playersData.4.battle_result == "Win" %}{% divide playersData.total_value playersData.winner_count %}{% endif %}</span>
+            </div>
+
+            <!-- SKIN ROLLER -->
+            <div class="skins" style="overflow: hidden; height: 200px; border: 1px solid black;">
+                <div class="skins-container">
+
+                </div>
+            </div>
+            
+            <div class="rolled-skins">
+                <p class="total-value">{% if game_started is True %}Total: {{playersData.4.battle_result_coins}}${% endif %}</p>
+                <div class="item-slot-1">
+                    <span class="item-name">{% if game_started is True %}{{playersData.4.rolls_names.0}}: {% endif %}</span>
+                    <span class="item-value">{% if game_started is True %}{{playersData.4.rolls_values.0}}${% endif %}</span>
+                </div>
+                <div class="item-slot-2">
+                    <span class="item-name">{% if game_started is True %}{{playersData.4.rolls_names.1}}: {% endif %}</span>
+                    <span class="item-value">{% if game_started is True %}{{playersData.4.rolls_values.1}}${% endif %}</span>
+                </div>
+                <div class="item-slot-3">
+                    <span class="item-name">{% if game_started is True %}{{playersData.4.rolls_names.2}}: {% endif %}</span>
+                    <span class="item-value">{% if game_started is True %}{{playersData.4.rolls_values.2}}${% endif %}</span>
+                </div>
+                <div class="item-slot-4">
+                    <span class="item-name">{% if game_started is True %}{{playersData.4.rolls_names.3}}: {% endif %}</span>
+                    <span class="item-value">{% if game_started is True %}{{playersData.4.rolls_values.3}}${% endif %}</span>
+                </div>
+                <div class="item-slot-5">
+                    <span class="item-name">{% if game_started is True %}{{playersData.4.rolls_names.4}}: {% endif %}</span>
+                    <span class="item-value">{% if game_started is True %}{{playersData.4.rolls_values.4}}${% endif %}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endcomment %}
+{% comment %} <button id="test-roll" onclick="rollSkins()">ROLL</button> {% endcomment %}
+
+
+<!-- {% for item in items %}
+
+    <p>{{item.item_name}}: {{item.item_value}}$ with {% multiply item.item_odds %}% odds</p>
+
+{% endfor %} -->
+
+
+
+{{ room_name|json_script:"room-name" }}
+
+
+<script>
+    // function setSeats() {
+    //     var value = JSON.parse(document.getElementById('casebattle').textContent);
+    //     console.log(value)
+    // }
+
+    //  window.onload = checkSeats()
+
+    const sleep = ms => {
+        return new Promise(resolve => setTimeout(resolve, ms))
+    }
+
+    function copyLink() {
+        var link = window.location.href
+
+        navigator.clipboard.writeText(link);
+        document.querySelector('.cb-share-room').style.background = '#1A1C2C'
+    }
+
+    // Websocket Case Battle
+    const roomName = JSON.parse(document.getElementById('room-name').textContent);
+
+    const cbSocket = new WebSocket('wss://' + window.location.host + '/ws/cb/' + roomName + '/')
+
+    function addPlayer(seat) {
+        const user = '{{request.user.social_auth.get.extra_data.player.steamid}}'
+
+        cbSocket.send(JSON.stringify({
+            'user_id': user,
+            'room_name': roomName,
+            'seat': seat,
+        }))
+    }
+
+    cbSocket.onmessage = async function(e) {
+        console.log(e);
+        const data = JSON.parse(e.data)
+        console.log(data)
+        console.log(data.results)
+
+        if(data.seat){
+            if(data.seat == 1){
+                document.querySelector('#player_1 button').style.display = 'none'
+                document.querySelector('#player_1 .player-area').innerHTML = '<div class="cb-player-board-info flex flex-column"><img src="' + data.avatar + '" alt="Player avatar"><span class="f-m">' + data.username + '</span></div><div class="skins"><div class="skins-container"></div></div>'
+                document.querySelector('#player_1_inv .cb-player-info').innerHTML = '<div class="cb-bet-card flex align-center"><img src="'+ data.avatar +'" alt="User Profile"><span class="f-m">'+ data.username +'</span><div class="bet-value flex align-center"><span class="f-m">0.00</span><img src="{% static "images/coin.svg" %}" alt="Coin"></div></div>'
+            }
+            if(data.seat == 2){
+                document.querySelector('#player_2 button').style.display = 'none'
+                document.querySelector('#player_2 .player-area').innerHTML = '<div class="cb-player-board-info flex flex-column"><img src="' + data.avatar + '" alt="Player avatar"><span class="f-m">' + data.username + '</span></div><div class="skins"><div class="skins-container"></div></div>'
+                document.querySelector('#player_2_inv .cb-player-info').innerHTML = '<div class="cb-bet-card flex align-center"><img src="'+ data.avatar +'" alt="User Profile"><span class="f-m">'+ data.username +'</span><div class="bet-value flex align-center"><span class="f-m">0.00</span><img src="{% static "images/coin.svg" %}" alt="Coin"></div></div>'
+            }
+            if(data.seat == 3){
+                document.querySelector('#player_3 button').style.display = 'none'
+                document.querySelector('#player_3 .player-area').innerHTML = '<div class="cb-player-board-info flex flex-column"><img src="' + data.avatar + '" alt="Player avatar"><span class="f-m">' + data.username + '</span></div><div class="skins"><div class="skins-container"></div></div>'
+                document.querySelector('#player_3_inv .cb-player-info').innerHTML = '<div class="cb-bet-card flex align-center"><img src="'+ data.avatar +'" alt="User Profile"><span class="f-m">'+ data.username +'</span><div class="bet-value flex align-center"><span class="f-m">0.00</span><img src="{% static "images/coin.svg" %}" alt="Coin"></div></div>'
+            }
+            if(data.seat == 4){
+                document.querySelector('#player_4 button').style.display = 'none'
+                document.querySelector('#player_4 .player-area').innerHTML = '<div class="cb-player-board-info flex flex-column"><img src="' + data.avatar + '" alt="Player avatar"><span class="f-m">' + data.username + '</span></div><div class="skins"><div class="skins-container"></div></div>'
+                document.querySelector('#player_4_inv .cb-player-info').innerHTML = '<div class="cb-bet-card flex align-center"><img src="'+ data.avatar +'" alt="User Profile"><span class="f-m">'+ data.username +'</span><div class="bet-value flex align-center"><span class="f-m">0.00</span><img src="{% static "images/coin.svg" %}" alt="Coin"></div></div>'
+            }
+            update_coins()
+        }
+        
+        if(data.results){
+            playersArr = ['player_1', 'player_2', 'player_3', 'player_4']
+            playersInvArr = ['player_1_inv', 'player_2_inv', 'player_3_inv', 'player_4_inv']
+            itemSlotsArr = ['.item-slot-1', '.item-slot-2', '.item-slot-3', '.item-slot-4', '.item-slot-5']
+            const playersResultState = [0, 0, 0, 0]
+
+            playerInfoContainer = document.getElementsByClassName('cb-player-board-info')
+            for(var i = 0; i < playerInfoContainer.length; i++){
+                playerInfoContainer[i].style.display = 'none'
+            }
+
+            $('.cb-player-board-info').prepend('<span class="cb-player-result f-m"></span>');
+            $('.cb-player-board-info').append('<div class="cb-win-amount flex align-center"><span class="cb-player-total-win f-m coin"></span><img src="{% static "images/coin.svg" %}" alt="Coin" class="coin"></div>');
+
+            for(var item = 0; item < itemSlotsArr.length; item++){
+                await rollSkins(data.results, item, playersResultState, data.skin_data)
+            }
+
+            // for(i=0; i < playersArr.length; i++){
+            //     document.getElementById(playersInvArr[i]).querySelector('.cb-player-total-win').innerHTML = data.results[i+1].battle_result_coins
+            // }
+
+            for(i=0; i < playersArr.length; i++){
+                if(data.results[i+1].battle_result === 'Win'){
+                    document.getElementById(playersArr[i]).querySelector('.cb-player-result').style.color = '#01DC69'
+                    document.getElementById(playersArr[i]).querySelector('.cb-player-result').innerHTML = data.results[i+1].battle_result+'!'
+                } else {
+                    document.getElementById(playersArr[i]).querySelector('.cb-player-result').style.color = '#FF0047'
+                    document.getElementById(playersArr[i]).querySelector('.cb-player-result').innerHTML = data.results[i+1].battle_result
+                }
+                
+                document.getElementById(playersArr[i]).querySelector('.skins').style.display = 'none';
+                document.getElementById(playersArr[i]).querySelector('.cb-player-board-info').style.display = 'flex'
+
+                if(data.results[i+1].battle_result === 'Win'){
+                    document.getElementById(playersArr[i]).querySelector('.cb-player-total-win').style.color = '#01DC69'
+                    winnerContainer = document.getElementById(playersArr[i]).querySelector('.cb-player-total-win')
+                    winAmount = data.results.total_value / data.results.winner_count
+
+                    $(winnerContainer).each(function () {
+                        var $this = $(this);
+                        jQuery({ Counter: parseFloat(0) }).animate({ Counter: parseFloat(winAmount) }, {
+                            duration: 2000,
+                            easing: 'swing',
+                            step: function () {
+                                $this.text(this.Counter.toFixed(2));
+                            }
+                        });
+                    });
+
+                    // document.getElementById(playersArr[i]).querySelector('.cb-player-total-win').innerHTML = data.results.total_value / data.results.winner_count
+                } else {
+                    document.getElementById(playersArr[i]).querySelector('.cb-player-total-win').style.color = '#FF0047'
+                    document.getElementById(playersArr[i]).querySelector('.cb-player-total-win').innerHTML = '0.00'
+                }
+            }
+        }
+    }
+
+    async function rollSkins(results, itemNum, playersResultState, skinData) {
+            skinsContainer = document.getElementsByClassName('skins-container')
+            for(var i = 0; i < skinsContainer.length; i++){
+                skinsContainer[i].style.transition = 'none'
+                skinsContainer[i].style.marginTop = '0px'
+                skinsContainer[i].innerHTML = ''
+            }
+            
+            playersArr = ['player_1', 'player_2', 'player_3', 'player_4']
+            playerInvArr =  ['player_1_inv', 'player_2_inv', 'player_3_inv', 'player_4_inv']
+
+            for(var x=0; x < playersArr.length; x++){
+                for(var i = 0; i < 50; i++) {
+                    var element = ''
+                    var randed = await randomInt(1,100000);
+                    var rollOdds = 0
+
+                    for(var key in skinData){
+                        rollOdds += Number(skinData[key].item_odds) * 100000
+
+                        if(randed < rollOdds){
+                            element = '<div class="CardNumber'+i+' cb-skin-card"><span class="cb-roll-skin-exterior f-xs">'+ skinData[key].item_exterior +'</span><img class="cb-roll-skin-image" src="'+ skinData[key].item_image_url +'" alt="Skin Image"><span class="cb-roll-skinline f-ss" style="color: '+ skinData[key].item_color +'">'+ skinData[key].item_skinline +'</span><span class="cb-roll-skin-name f-ss">'+ skinData[key].item_name +'</span></div>'
+                            document.getElementById(playersArr[x]).querySelector('.skins-container').innerHTML += element
+                            break
+                        }
+                    }
+
+                    // if(randed < (skinData[0].item_odds * 10000 )){
+                    //     element = '<div class="CardNumber'+i+' cb-skin-card"><span class="cb-roll-skin-exterior f-xs">Exterior</span><img class="cb-roll-skin-image" src="https://community.cloudflare.steamstatic.com/economy/image/-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXH5ApeO4YmlhxYQknCRvCo04DEVlxkKgpot7HxfDhnwMzJemkV08ykm4aOhOT9PLXQmlRc7cF4n-T--Y3nj1H6r0NoMG-iINDBe1NtZArYrlLokuru05Po6JWfynZl7yYmtn-JmUCxhQYMMLJKN_FGrA/360fx360f" alt="Skin Image"><span class="cb-roll-skinline f-ss">Skinline</span><span class="cb-roll-skin-name f-ss">Skin Name</span></div>'
+                    // } else if(randed < 2100){
+                    //     element = '<div class="CardNumber'+i+' cb-skin-card"><span class="cb-roll-skin-exterior f-xs">Exterior</span><img class="cb-roll-skin-image" src="https://community.cloudflare.steamstatic.com/economy/image/-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXH5ApeO4YmlhxYQknCRvCo04DEVlxkKgpot7HxfDhnwMzJemkV08ykm4aOhOT9PLXQmlRc7cF4n-T--Y3nj1H6r0NoMG-iINDBe1NtZArYrlLokuru05Po6JWfynZl7yYmtn-JmUCxhQYMMLJKN_FGrA/360fx360f" alt="Skin Image"><span class="cb-roll-skinline f-ss">Skinline</span><span class="cb-roll-skin-name f-ss">Skin Name</span></div>'
+                    // } else if(randed < 7100){
+                    //     element = '<div class="CardNumber'+i+' cb-skin-card"><span class="cb-roll-skin-exterior f-xs">Exterior</span><img class="cb-roll-skin-image" src="https://community.cloudflare.steamstatic.com/economy/image/-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXH5ApeO4YmlhxYQknCRvCo04DEVlxkKgpot7HxfDhnwMzJemkV08ykm4aOhOT9PLXQmlRc7cF4n-T--Y3nj1H6r0NoMG-iINDBe1NtZArYrlLokuru05Po6JWfynZl7yYmtn-JmUCxhQYMMLJKN_FGrA/360fx360f" alt="Skin Image"><span class="cb-roll-skinline f-ss">Skinline</span><span class="cb-roll-skin-name f-ss">Skin Name</span></div>'
+                    // } else if(randed < 15100){
+                    //     element = '<div class="CardNumber'+i+' cb-skin-card"><span class="cb-roll-skin-exterior f-xs">Exterior</span><img class="cb-roll-skin-image" src="https://community.cloudflare.steamstatic.com/economy/image/-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXH5ApeO4YmlhxYQknCRvCo04DEVlxkKgpot7HxfDhnwMzJemkV08ykm4aOhOT9PLXQmlRc7cF4n-T--Y3nj1H6r0NoMG-iINDBe1NtZArYrlLokuru05Po6JWfynZl7yYmtn-JmUCxhQYMMLJKN_FGrA/360fx360f" alt="Skin Image"><span class="cb-roll-skinline f-ss">Skinline</span><span class="cb-roll-skin-name f-ss">Skin Name</span></div>'
+                    // } else if(randed < 25100){
+                    //     element = '<div class="CardNumber'+i+' cb-skin-card"><span class="cb-roll-skin-exterior f-xs">Exterior</span><img class="cb-roll-skin-image" src="https://community.cloudflare.steamstatic.com/economy/image/-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXH5ApeO4YmlhxYQknCRvCo04DEVlxkKgpot7HxfDhnwMzJemkV08ykm4aOhOT9PLXQmlRc7cF4n-T--Y3nj1H6r0NoMG-iINDBe1NtZArYrlLokuru05Po6JWfynZl7yYmtn-JmUCxhQYMMLJKN_FGrA/360fx360f" alt="Skin Image"><span class="cb-roll-skinline f-ss">Skinline</span><span class="cb-roll-skin-name f-ss">Skin Name</span></div>'
+                    // } else if(randed < 37000){
+                    //     element = '<div class="CardNumber'+i+' cb-skin-card"><span class="cb-roll-skin-exterior f-xs">Exterior</span><img class="cb-roll-skin-image" src="https://community.cloudflare.steamstatic.com/economy/image/-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXH5ApeO4YmlhxYQknCRvCo04DEVlxkKgpot7HxfDhnwMzJemkV08ykm4aOhOT9PLXQmlRc7cF4n-T--Y3nj1H6r0NoMG-iINDBe1NtZArYrlLokuru05Po6JWfynZl7yYmtn-JmUCxhQYMMLJKN_FGrA/360fx360f" alt="Skin Image"><span class="cb-roll-skinline f-ss">Skinline</span><span class="cb-roll-skin-name f-ss">Skin Name</span></div>'
+                    // } else if(randed < 49000){
+                    //     element = '<div class="CardNumber'+i+' cb-skin-card"><span class="cb-roll-skin-exterior f-xs">Exterior</span><img class="cb-roll-skin-image" src="https://community.cloudflare.steamstatic.com/economy/image/-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXH5ApeO4YmlhxYQknCRvCo04DEVlxkKgpot7HxfDhnwMzJemkV08ykm4aOhOT9PLXQmlRc7cF4n-T--Y3nj1H6r0NoMG-iINDBe1NtZArYrlLokuru05Po6JWfynZl7yYmtn-JmUCxhQYMMLJKN_FGrA/360fx360f" alt="Skin Image"><span class="cb-roll-skinline f-ss">Skinline</span><span class="cb-roll-skin-name f-ss">Skin Name</span></div>'
+                    // } else if(randed < 69000){
+                    //     element = '<div class="CardNumber'+i+' cb-skin-card"><span class="cb-roll-skin-exterior f-xs">Exterior</span><img class="cb-roll-skin-image" src="https://community.cloudflare.steamstatic.com/economy/image/-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXH5ApeO4YmlhxYQknCRvCo04DEVlxkKgpot7HxfDhnwMzJemkV08ykm4aOhOT9PLXQmlRc7cF4n-T--Y3nj1H6r0NoMG-iINDBe1NtZArYrlLokuru05Po6JWfynZl7yYmtn-JmUCxhQYMMLJKN_FGrA/360fx360f" alt="Skin Image"><span class="cb-roll-skinline f-ss">Skinline</span><span class="cb-roll-skin-name f-ss">Skin Name</span></div>'
+                    // } else if(randed < 86000){
+                    //     element = '<div class="CardNumber'+i+' cb-skin-card"><span class="cb-roll-skin-exterior f-xs">Exterior</span><img class="cb-roll-skin-image" src="https://community.cloudflare.steamstatic.com/economy/image/-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXH5ApeO4YmlhxYQknCRvCo04DEVlxkKgpot7HxfDhnwMzJemkV08ykm4aOhOT9PLXQmlRc7cF4n-T--Y3nj1H6r0NoMG-iINDBe1NtZArYrlLokuru05Po6JWfynZl7yYmtn-JmUCxhQYMMLJKN_FGrA/360fx360f" alt="Skin Image"><span class="cb-roll-skinline f-ss">Skinline</span><span class="cb-roll-skin-name f-ss">Skin Name</span></div>'
+                    // } else {
+                    //     element = '<div class="CardNumber'+i+' cb-skin-card"><span class="cb-roll-skin-exterior f-xs">Exterior</span><img class="cb-roll-skin-image" src="https://community.cloudflare.steamstatic.com/economy/image/-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXH5ApeO4YmlhxYQknCRvCo04DEVlxkKgpot7HxfDhnwMzJemkV08ykm4aOhOT9PLXQmlRc7cF4n-T--Y3nj1H6r0NoMG-iINDBe1NtZArYrlLokuru05Po6JWfynZl7yYmtn-JmUCxhQYMMLJKN_FGrA/360fx360f" alt="Skin Image"><span class="cb-roll-skinline f-ss">Skinline</span><span class="cb-roll-skin-name f-ss">Skin Name</span></div>'
+                    // }
+                    // document.getElementById(playersArr[x]).querySelector('.skins-container').innerHTML += element
+                }
+            }
+
+            await sleep(500)
+            await roll(skinsContainer, results, playersArr, itemNum, playerInvArr, playersResultState, skinData)
+    }
+
+    async function roll(skinsContainer, results, playersArr, itemNum, playerInvArr, playersResultState, skinData) {
+        console.log(results)
+        for(var i = 0; i<skinsContainer.length; i++){
+            document.getElementById(playersArr[i]).querySelector('.CardNumber40').innerHTML = '<div class="CardNumber'+i+' cb-skin-card"><span class="cb-roll-skin-exterior f-xs">'+ results[i+1].roll_exterior[itemNum] +'</span><img class="cb-roll-skin-image" src="' + results[i+1].roll_image[itemNum] + '" alt="Skin Image"><span class="cb-roll-skinline f-ss" style="color: '+ results[i+1].roll_color[itemNum] +'">'+ results[i+1].roll_skinline[itemNum] +'</span><span class="cb-roll-skin-name f-ss">' + results[i+1].rolls_names[itemNum] + '</span></div>'
+            skinsContainer[i].style.transition = 'all 5s cubic-bezier(.08,.6,0,1)'
+            
+            elementHeight = document.getElementsByClassName('skins')[0].offsetHeight
+            console.log(elementHeight)
+            skinsContainer[i].style.marginTop = '-' + elementHeight * 40 + 'px'
+        }
+        await sleep(5500)
+        // x = document.getElementsByClassName('CardNumber74')
+        // for(var j = 0; j < x.length; j++){
+        //     x[j].style.color = 'green'
+        // }
+
+        // itemSlotsArr = ['.item-slot-1', '.item-slot-2', '.item-slot-3', '.item-slot-4', '.item-slot-5']
+
+        for(var i = 0; i<skinsContainer.length; i++){
+            playerField = document.getElementById(playerInvArr[i])
+            console.log(playerInvArr[i])
+            playerField.querySelector('.cb-player-inv').innerHTML += '<div class="cb-player-item flex"><div class="cb-player-item-image flex align-center"><img src="'+ results[i+1].roll_image[itemNum] +'" alt="Skin image"></div><div class="cb-player-item-info flex flex-column"><span class="cb-item-exterior f-xs">'+ results[i+1].roll_exterior[itemNum] +'</span><span class="f-ss" style="color: '+ results[i+1].roll_color[itemNum] +'">'+ results[i+1].roll_skinline[itemNum] +'</span><span class="f-ss">' + results[i+1].rolls_names[itemNum] + '</span><div class="flex align-center f-ss"><span>' + results[i+1].rolls_values[itemNum] + '</span><img src="{% static "images/coin.svg" %}" alt="Coins" class="coin"></div></div></div>'
+            
+            prevRes = playersResultState[i]
+            playersResultState[i] += Number(results[i+1].rolls_values[itemNum])
+
+            battleResultStateContainer = playerField.querySelector('.bet-value span')
+
+            $(battleResultStateContainer).each(function () {
+                var $this = $(this);
+                jQuery({ Counter: parseFloat(prevRes) }).animate({ Counter: parseFloat(playersResultState[i]) }, {
+                    duration: 2000,
+                    easing: 'swing',
+                    step: function () {
+                        $this.text(this.Counter.toFixed(2));
+                    }
+                });
+            });
+                        
+            // playerField.querySelector('.bet-value > span').innerHTML = playersResultState[i]
+        }
+
+        gameCounter = document.getElementsByClassName('casebattle-game-count')
+        gameCounter[itemNum].style.background = '#4051F0'
+
+
+        await sleep(3000)
+    }
+
+    var token = '{{csrf_token}}'
+
+    function update_coins() {
+        $.ajax({
+            method: "POST",
+            headers: { "X-CSRFToken": token },
+            url: "/api/coins/",
+            data: {},
+            success: function(data) {
+                console.log(data) // check out how data is structured
+
+                // Update the coin amount
+                document.querySelector('#user_coins').innerHTML = data.coins
+            }
+        })
+    };
+
+
+    async function randomInt(min, max) {
+        return Math.floor(Math.random() * (max - min)) + min;
+    }
+</script>
+
+
+{% endblock content %}

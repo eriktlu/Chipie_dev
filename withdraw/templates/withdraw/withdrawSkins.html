@@ -1,0 +1,197 @@
+{% extends 'main.html' %}
+
+{% load static %}
+
+{% block content %}
+
+
+
+
+<div class="withdraw-skins">
+    <div class="container">
+        <div class="withdraw-skins-page flex flex-column">
+
+            {% comment %} {% if offer_message %}
+                <p>{{offer_message}}</p>
+                <p>The partner has 20 minutes to send you the trade</p>
+            {% endif %} {% endcomment %}
+
+            <div class="bet-toggle" id="betToggle"><button id="toggleBet"><img src="{% static 'images/AddPackage.png' %}" alt="Bet Area"></button></div>
+
+            <section class="skins-list">
+                <div class="withdraw-filter">
+                    <form action="" method="post" class="withdraw-filter-form flex flex-column" name="withdrawFilter">
+                        {% csrf_token %}
+                        <label for="filter-option" class="f-ss">Filter:</label>
+                        <select name="filter-option" id="filterOption" class="filter-selection" onchange="this.form.submit()">
+                            <option value="date">Date</option>
+                            <option value="high">Price: High to Low</option>
+                            <option value="low">Price: Low to High</option>
+                        </select>
+                    </form>
+                </div>
+                <form action="" method="POST" class="withdraw-form flex" id="withdrawForm" name='withdrawSkin'>
+                {% csrf_token %}
+                    {% for item in inventory %}
+                        <div class="listable-skin" onclick='withdrawTotal({{item.offer_price}})'>
+                            <input type="radio" name="item_name" id="{{forloop.counter}}" value="{{item.id}}" required class="skin-radio-button">
+                            <label class="select-skin flex flex-column align-center" for="{{forloop.counter}}">
+                                <div class="skin-top flex flex-column" style="border-bottom: 2px solid; {% if item.offer_price < 10 %} border-color: #CBCBCB; {% elif item.offer_price < 50  %} border-color: #5F6CD9; {% elif item.offer_price < 200  %} border-color: #0D22DA; {% elif item.offer_price < 500  %} border-color: #5007EB; {% elif item.offer_price < 1000  %} border-color: #9F1190; {% elif item.offer_price < 10000  %} border-color: #850910; {% elif item.offer_price < 100000  %} border-color: #ECAC06; {% else %} border-color: #A07400; {% endif %}">
+                                    <span class='f-xs skin-condition'>{{item.item_wear}}</span>
+                                    <div class="skin-image-container flex justify-center align-center">
+                                        <img src="https://community.cloudflare.steamstatic.com/economy/image/{{item.icon_url}}" alt="Item" class="skin-image">
+                                    </div>
+                                </div>
+                                <div class="skin-bot flex flex-column">
+                                    <span class='f-ss skin-name'>{{item.item_name}}</span>
+                                    <span class='f-ss skinline-name'>{{item.item_skinline_name}}</span>
+                                    <div class="skin-value flex"><span class="f-xs">{{item.offer_price}}</span><img class="coin" src="{% static 'images/coin.svg' %}" alt="Coins"></div>
+                                </div>
+                            </label>
+
+                        </div>                
+                    {% endfor %}
+                </form>
+            </section>
+        </div>
+    </div>
+</div>
+
+<div class="bet-sidebar flex flex-column sidebar-withdraw" id="betBar">
+    <section class="bet-sidebar-container flex flex-column {{trade_off}}">
+        <section class="sidebar-section withdraw-items flex flex-column">
+            <span class="sidebar-title f-ss s-item">Selected Items</span>
+
+            <div class="withdraw-item-container" id="withdrawContainer"></div>
+            
+        </section>
+    </section>
+
+    <section class="sidebar-confirm-bet sidebar-section {{trade_off}}">
+        <div class="withdraw-receive flex justify-between">
+            <div class="withdraw-receive-text f-xs flex"><span>You will spend</span></div>
+            <div class="withdraw-receive-value flex"><span class="f-xs" id="withdrawTotalValue">0.00</span><img class="coin" src="{% static 'images/coin.svg' %}" alt="Coins"></div>
+        </div>
+        <input type="submit" value="Withdraw" class="sidebar-place-bet f-m" form="withdrawForm">
+    </section>
+
+
+    <div class="bet-sidebar-container flex flex-column {{trade_on}}">
+        <section class="sidebar-section withdraw-items flex flex-column">
+            <span class="sidebar-title f-ss s-item">Pending Trade</span>
+
+            <div class="trade-item-container" id="pendingTradeContainer">
+                <div class="trade-item flex-column" id="withdrawItem">
+
+                    <div class="trade-item-top flex">
+                        <section class="trade-item-image flex">
+                            <img src="https://community.cloudflare.steamstatic.com/economy/image/{{trade_item.icon_url}}" alt="Item">
+                        </section>
+                        <section class="trade-item-info flex flex-column">
+                            <span class="skin-name f-ss">{{trade_item.item_name}}</span>
+                            <span class="f-ss skinline-name">{{trade_item.item_skinline_name}}</span>
+                            <span class="f-xs skin-condition">{{trade_item.item_wear}}</span>
+                            <div class="trade-receive-value flex"><span class="f-xs" id="withdrawValue">{{trade_item.offer_price}}</span><img class="coin" src="{% static 'images/coin.svg' %}" alt="Coins"></div>
+                        </section>
+                    </div>
+                    <div class="trade-item-bottom flex-column">
+                        <p class="f-xs">You have {{time_diff}} minutes to make the trade offer!</p>
+                        <p class="f-xs"><span class='important'>NB!</span> Send the trade offer for this <a href="https://steamcommunity.com/profiles/{{trade_item.seller_id.steam_id}}/inventory/#730_2_{{trade_item.asset_id}}" target="_blank" rel="noopener noreferrer">item</a> with asset ID: <span class="yellow">{{trade_item.asset_id}}</span></p>
+                        <a class="flex align-center justify-center" href="{{trade_item.seller_trade_link}}" target="_blank" rel="noopener noreferrer"><img src="{% static 'images/steam.png' %}" alt="S"><span class="f-m">Send Trade Offer</span></a>
+                    </div>
+
+                    
+                </div>
+            </div>
+            
+        </section>
+    </div>
+    
+</div>
+
+
+
+{% comment %} <div>
+    <h1>Skins for sale</h1>
+
+
+    
+
+    {% if offer_message %}
+        <p>{{offer_message}}</p>
+        <p>The partner has 20 minutes to send you the trade</p>
+    {% endif %}
+
+    {% if steam_name %}
+        <a href="https://steamcommunity.com/id/{{steam_name}}/tradeoffers/" target="_blank">Trade Link</a>
+    {% endif %}
+
+    <form action="" method="POST">
+        {% csrf_token %}
+        <div class="inventory" style="display: flex; flex-wrap: wrap;">
+        {% for item in inventory %}
+            <span>{{item.id}}</span>
+            <input type="radio" name="item_name" id="{{forloop.counter}}" value="{{item.id}}" required>
+            <label class="selectable" for="{{forloop.counter}}">
+                
+                <img src="https://community.cloudflare.steamstatic.com/economy/image/{{item.icon_url}}" alt="" style="height: 100px;">
+                <span>{{item.item_name}}</span>
+                <span>{{item.offer_price}}$</span>
+            </label>
+        {% endfor %}
+        </div>
+
+        <label for="w-trade-url">Trade url:</label>
+        <input type="text" name="trade_url" required id="w-trade-url">
+
+        <label for="w-api-key">API key (optional):</label>
+        <input type="text" name="api_key" id="w-api-key">
+
+        <input type="submit" value="Submit">
+    </form>
+</div> {% endcomment %}
+
+
+
+
+<script>
+
+    if (document.querySelector('input[name="item_name"]')) {
+        document.querySelectorAll('input[name="item_name"]').forEach((elem) => {
+            elem.addEventListener("click", function(event) {
+                var item = event.target.value;
+                var n = event.target.nextElementSibling;
+                console.log(item);
+    
+                skinCondition = n.querySelector('.skin-condition').innerHTML
+                skinImage = n.querySelector('.skin-image').src
+                skinName = n.querySelector('.skin-name').innerHTML
+                skinlineName = n.querySelector('.skinline-name').innerHTML
+                skinPrice = n.querySelector('.skin-value span').innerHTML
+                el = n.querySelector('.skin-top')
+                rarityColor = getComputedStyle(el).borderColor
+
+                console.log(rarityColor + ' xddd')
+        
+                document.getElementById('withdrawContainer').innerHTML = '<div class="withdraw-item flex" id="withdrawItem" style="border-color: '+ rarityColor +'"><section class="withdraw-item-image flex"><img src="'+ skinImage +'" alt="Item"></section><section class="withdraw-item-info flex flex-column"><span class="skin-name f-ss">'+ skinName +'</span><span class="f-ss skinline-name">'+ skinlineName +'</span><span class="f-xs skin-condition">'+ skinCondition +'</span><div class="trade-receive-value flex"><span class="f-xs" id="withdrawValue">'+ skinPrice +'</span><img class="coin" src="{% static "images/coin.svg" %}" alt="Coins"></div><button class="delete-item" onclick="removeItem()"><img src="{% static "images/delete-no-bg.png" %}" alt="Delete"></button></section></div>'
+            });
+        });
+    }
+    
+    function removeItem() {
+        document.getElementById('withdrawContainer').innerHTML = '';
+        var el = document.getElementsByClassName('skin-radio-button')
+        for(var i = 0; i < el.length; i++){
+            el[i].checked = false
+        }
+        document.getElementById('withdrawTotalValue').innerHTML = '0.00'
+    }
+    
+    function withdrawTotal(value) {
+        document.getElementById('withdrawTotalValue').innerHTML = value
+    }
+    
+</script>
+
+
+{% endblock content %}

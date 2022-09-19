@@ -1,0 +1,286 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" media="screen" href="{% static 'styles/main.css' %}">
+    <title>Chipie</title>
+    <link rel="apple-touch-icon" sizes="180x180" href="{% static 'favicons/apple-touch-icon.png' %}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{% static 'favicons/favicon-32x32.png' %}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{% static 'favicons/favicon-16x16.png' %}">
+    <link rel="manifest" href="{% static 'favicons/site.webmanifest' %}">
+    <link rel="mask-icon" href="{% static 'favicons/safari-pinned-tab.svg' %}" color="#5bbad5">
+    <meta name="msapplication-TileColor" content="#da532c">
+    <meta name="theme-color" content="#ffffff">
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+</head>
+<body>
+    <div id="overlay"></div>
+    <div class="background">
+        {% include 'nav.html' %}
+        {% include 'header-mobile.html' %}
+        <main>
+            <div class="page-container flex">
+                <div class="chat-toggle" id="chatToggle"><button id="toggleChat"><img src="{% static 'images/chat.svg' %}" alt="Chat"></button></div>
+                <div class="chat-container" id="chat-c">
+                    {% include 'chat.html' %}
+                </div>
+                <div class="main-page-container flex" {% if not request.user.is_authenticated %} style="padding: 0 175px;" {% endif %} >
+
+                    {% block content %}
+
+                    {% endblock %}
+                </div>
+                {% include 'mobile-menu.html' %}
+            </div>
+        </main>
+
+        {% include 'nav-mobile.html' %}
+    </div>
+
+    {% include 'notifications.html' %}
+    
+</body>
+</html>
+
+<script>
+
+    var token = '{{csrf_token}}'
+
+    $(document).ready(function() {
+        var x = false
+       $('#toggleChat').click(function() {
+
+        el = document.getElementById('header-m')
+
+            if(window.getComputedStyle(el).display === 'none'){
+                if(x === true){
+                    $('#chat').css("transform", "translateX(-350px)")
+                    $('#chatToggle').css("transform", "translateX(0px)")
+                    document.querySelector('#chat-c').style.width = '0px'
+                    document.querySelector('#chat-c').style.zIndex = '-1'
+                    document.querySelector('main').classList.remove('c-open')
+                    if(document.querySelector('.container-chat')){
+                        el = document.querySelector('.container-chat')
+                        el.classList.remove('container-chat')
+                        el.classList.add('container')
+                    }
+                    
+                    x = false
+
+                } else {
+                    $('#chat').css("transform", "translateX(0px)")
+                    $('#chatToggle').css("transform", "translateX(350px)")
+                    document.querySelector('#chat-c').style.width = '350px'
+                    document.querySelector('#chat-c').style.zIndex = '10'
+                    document.querySelector('main').classList.add('c-open')
+
+                    if(document.getElementById('rocketPath')){
+                        document.getElementById('rocketPath').style.display = 'none'
+                    }
+                    if(document.querySelector('.container')){
+                        el = document.querySelector('.container')
+                        el.classList.remove('container')
+                        el.classList.add('container-chat')
+                    }
+                    x = true
+                }
+            } else {
+                if(x === true){
+                    $('#chat').css("transform", "translateX(-100%)")
+                    $('#chatToggle').css("transform", "translateX(0px)")
+                    $('#chatToggle').css("left", "0")
+                    $('#chatToggle').css("z-index", "11")
+                    $('#chat-c').css("z-index", "-1")
+
+                    $('#overlay').css("z-index", "-1")
+                    $('#overlay').css("background", "none")
+                    $('#overlay').removeClass("chat-overlay")
+
+                    x = false
+
+                } else {
+                    $('#chat').css("transform", "translateX(0)")
+                    $('#chatToggle').css("transform", "translateX(-100%)")
+                    $('#chatToggle').css("left", "100%")
+                    $('#chat-c').css("z-index", "20")
+                    $('#chatToggle').css("z-index", "20")
+
+                    $('#overlay').addClass("chat-overlay")
+                    $('#overlay').css("z-index", "15")
+                    $('#overlay').css("background", "rgba(0,0,0,0.8)")
+
+                    x = true
+                }
+            }
+
+            $('.chat-overlay').click(function(e){
+                console.log('xddddd')
+                $('#chat').css("transform", "translateX(-100%)")
+                $('#chatToggle').css("transform", "translateX(0px)")
+                $('#chatToggle').css("left", "0")
+                $('#chatToggle').css("z-index", "11")
+                $('#chat-c').css("z-index", "-1")
+
+                $('#overlay').css("z-index", "-1")
+                $('#overlay').removeClass("chat-overlay")
+                $('#overlay').css("background", "none")
+                
+                x = false
+            });
+            
+       });
+
+       
+
+       var mobileMenuClosed = true
+        $('#mobMenuButton').click(function() {
+
+            $('#chat').css("transform", "translateX(-100%)")
+            $('#chatToggle').css("transform", "translateX(0px)")
+            $('#chatToggle').css("left", "0")
+            $('#chatToggle').css("z-index", "11")
+            $('#chat-c').css("z-index", "-1")
+            x = false
+
+            $('#betBar').css("transform", "translateX(0)")
+            $('#betBar').css("z-index", "10")
+            $('#betToggle').css("z-index", "11")
+            $('#betToggle').css("transform", "translateX(0)")
+            $('#betToggle').css("right", "0")
+            chatClosed = true
+
+            if(mobileMenuClosed === true){
+                $('#mobMenu').css("transform", "translateX(-100%)")
+                $('#mobMenu').css("z-index", "20")
+
+                $('#overlay').css("z-index", "15")
+                $('#overlay').css("background", "rgba(0,0,0,0.8)")
+                $('#overlay').addClass("mobile-menu-overlay")
+
+                mobileMenuClosed = false
+
+            } else {
+                $('#mobMenu').css("transform", "translateX(0)")
+                $('#mobMenu').css("z-index", "10")
+
+                $('#overlay').css("z-index", "-1")
+                $('#overlay').css("background", "none")
+                $('#overlay').removeClass("mobile-menu-overlay")
+
+                mobileMenuClosed = true
+            }
+
+            $('.mobile-menu-overlay').click(function(e){
+                $('#mobMenu').css("transform", "translateX(0)")
+                $('#mobMenu').css("z-index", "10")
+
+                $('#overlay').css("z-index", "-1")
+                $('#overlay').css("background", "none")
+                $('#overlay').removeClass("mobile-menu-overlay")
+
+                mobileMenuClosed = true
+            });
+        });
+
+        var chatClosed = true
+        $('#toggleBet').click(function() {
+            if(chatClosed === true){
+                $('#betBar').css("transform", "translateX(-100%)")
+                $('#betBar').css("z-index", "20")
+                $('#betToggle').css("z-index", "15")
+                $('#betToggle').css("transform", "translateX(100%)")
+                $('#betToggle').css("right", "100%")
+
+                $('#overlay').css("z-index", "15")
+                $('#overlay').css("background", "rgba(0,0,0,0.8)")
+                $('#overlay').addClass("bet-overlay")
+
+                chatClosed = false
+
+            } else {
+                $('#betBar').css("transform", "translateX(0)")
+                $('#betBar').css("z-index", "10")
+                $('#betToggle').css("z-index", "11")
+                $('#betToggle').css("transform", "translateX(0)")
+                $('#betToggle').css("right", "0")
+
+                $('#overlay').css("z-index", "-1")
+                $('#overlay').css("background", "none")
+                $('#overlay').removeClass("bet-overlay")
+
+                chatClosed = true
+            }
+
+            $('.bet-overlay').click(function(e){
+                $('#betBar').css("transform", "translateX(0)")
+                $('#betBar').css("z-index", "10")
+                $('#betToggle').css("z-index", "15")
+                $('#betToggle').css("transform", "translateX(0)")
+                $('#betToggle').css("right", "0")
+
+                $('#overlay').css("z-index", "-1")
+                $('#overlay').css("background", "none")
+                $('#overlay').removeClass("bet-overlayy")
+
+                chatClosed = true
+            });
+        });
+   });
+
+
+   async function addToBetAmount(value){
+    if(value === -1){
+       userCoins = await get_coins()
+       console.log(userCoins)
+       betToAdd = (Number(userCoins) / 2).toFixed(2)
+    }
+    else if(value === -2){
+        currentBetValue = document.querySelector('#bet-value').value
+        if(currentBetValue > 0){
+            betToAdd = (Number(currentBetValue) * 2).toFixed(2)
+        }
+        else {
+            betToAdd = 0
+        }
+    }
+    else if(value === -3){
+        userCoins = await get_coins()
+        console.log(userCoins + 'lmao')
+        betToAdd = Number(userCoins).toFixed(2)
+    }
+    else if (value === 0){
+        betToAdd = 0
+    }
+    else{
+        currentBetValue = document.querySelector('#bet-value').value
+        betToAdd = (Number(value) + Number(currentBetValue)).toFixed(2)
+    }
+
+    console.log(betToAdd)
+    document.querySelector('#bet-value').value = betToAdd
+}
+
+
+async function get_coins() {
+    userCoins = 0
+    await $.ajax({
+        method: "POST",
+        headers: { "X-CSRFToken": token },
+        url: "/api/coins/",
+        data: {},
+        success: function(data) {
+            console.log(data) // check out how data is structured
+
+            // Update the coin amount
+            console.log(data.coins)
+            userCoins = data.coins
+        }
+    })
+    return userCoins
+}
+</script>

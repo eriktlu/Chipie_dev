@@ -1,0 +1,38 @@
+{% load static %}
+
+<header class="header flex desktop">
+    <div class="header-container flex justify-between align-center">
+
+        <div class="nav-left flex align-center">
+            <section class="logo"><a href="/"><img src="{% static 'images/chipie-logo-2.svg' %}" alt="Chipie"></a></section>
+            <nav class="main-nav flex align-center">
+                <a class="nav-roulette flex align-center {% if request.path == '/' %} active {% endif %}" href="/"><img class="nav-icon-roulette {% if request.path == '/' %} active {% endif %}" src="{% static 'images/roulette-icon.svg' %}" alt="Roulette"><span class="nav-icon-text">Roulette</span></a>
+                <a class="nav-crash flex align-center {% if '/crash/' in request.path %} active {% endif %}" href="{% url 'crash:crash' %}"><img class="nav-icon-crash {% if '/crash/' in request.path %} active {% endif %}" src="{% static 'images/rocket.svg' %}" alt="Crash"><span class="nav-icon-text">Crash</span></a>
+                <a class="nav-casebattle flex align-center {% if '/casebattle/' in request.path %} active {% endif %}" href="{% url 'casebattle:casebattle' %}"><img class="nav-icon-caseBattle {% if '/casebattle/' in request.path %} active {% endif %}" src="{% static 'images/caseBattle-icon.svg' %}" alt="Case Battle"><span class="nav-icon-text">Case Battle</span></a>
+                <div class="nav-dropdown-image flex align-center" href="/"><img src="{% static 'images/desktop-dropdown.png' %}" alt="Dropdown">
+                    <div class="nav-dropdown">
+                        <a class="dropdown-menu-link" href="{% url 'fairness' %}">Fairness</a>
+                        {% comment %} <a class="dropdown-menu-link" href="#">FAQ</a> {% endcomment %}
+                        <a class="dropdown-menu-link" href="{% url 'privacypolicy' %}">Privay Policy</a>
+                    </div>
+                </div>
+                
+            </nav>
+        </div>
+        
+        <div class="nav-right">
+            <section class="user-info flex align-center">
+                {% if request.user.is_authenticated %}
+                    <a class="nav-withdraw flex align-center" href="{% url 'withdraw:withdraw' %}"><span>Withdraw</span></a>
+                    <a class="nav-deposit flex align-center" href="{% url 'deposit:deposit' %}"><span>Deposit</span></a>
+                    <p class="nav-coins flex align-center" ><span id="user_coins">{{coins|floatformat:2}}</span><img src="{% static 'images/coin.svg' %}" alt="Coins"></p>
+                    <a class="nav-profile flex align-center" href="{% url 'profile' %}"><img class="nav-profile-pic" src="{{request.user.social_auth.get.extra_data.player.avatarfull}}" alt="Profile picture"><div class="avatar-overlay"></div></a>
+                    <a href="{% url 'logout' %}" class="nav-logout flex align-center"><img class="nav-logout-img" src="{% static 'images/logout-desktop.svg' %}" alt="Log Out"></a>
+                {% else %}
+                    <a href="{% url 'social:begin' 'steam' %}" class="steam-login flex align-center"><img src="{% static 'images/steam-icon.svg' %}" alt="Steam"><span>Sign In</span></a>
+                {% endif %}
+            </section>
+        </div>
+
+    </div>
+</header>

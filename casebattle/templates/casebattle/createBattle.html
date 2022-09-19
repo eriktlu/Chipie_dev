@@ -1,0 +1,19 @@
+{% extends 'main.html' %}
+
+{% block content %}
+
+{% if error %} <p>{{error}}</p> {% endif %}
+
+<p>Choose case battle: </p>
+<form action="{% url 'casebattle:create-battle' %}" method="POST">
+    {% csrf_token %}
+
+    {% for p in packages %}
+        <input type="radio" name="cb_package" id="package-{{p.id}}" value="{{p.id}}">
+        <label for="package-{{p.id}}">{{p.name}}: {{p.price}}$</label><br>
+    {% endfor %}
+
+    <input type="submit" value="Submit">
+</form>
+
+{% endblock content %}

@@ -1,0 +1,637 @@
+{% extends 'main.html' %}
+
+{% load static %}
+
+{% block content %}
+
+<div class="bet-toggle" id="betToggle"><button id="toggleBet"><img src="{% static 'images/Cart Button.png' %}" alt="Bet Area"></button></div>
+
+<section class="roulette-game container" id='roulette-page'>
+    <div class="roulette-board flex justify-center">
+        <img src="{% static 'images/roulette_table_3.svg' %}" alt="Roulette Table" id="rouletteBoardImg">
+        <img src="{% static 'images/Roulette_arrow.svg' %}" alt="Roulette Winner" id="rouletteWinnerImg">
+    </div>
+
+    <div class="roulette-previous flex justify-between">
+        <div class="flex justify-between" id="prev-results-roulette">
+            {% for prev in prev_roulette_rolls reversed %} 
+                {% if prev == 'blue' %}
+                    <div class="prev-roulette-result">
+                        <img src="{% static 'images/CT coin.svg' %}" alt="Prev result blue">
+                    </div>
+                {% elif prev == 'green' %}
+                    <div class="prev-roulette-result">
+                        <img src="{% static 'images/chipie-logo-2.svg' %}" alt="Prev result green">
+                    </div>
+                    
+                {% elif prev == 'red' %}
+                    <div class="prev-roulette-result">
+                        <img src="{% static 'images/TT coin.svg' %}" alt="Prev result red">   
+                    </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+
+        <section class="roulette-timer" id="rTimer">
+            <p class="f-ss ">ROLLING IN:</p>
+            <p id="timer"></p>
+        </section>
+    </div>
+
+    <section class="roulette-bets flex justify-between">
+        <div class="flex flex-column">
+            <div class="bet-header flex align-center">
+                <img src="{% static 'images/CT coin.svg' %}" alt="CT coin">
+                <span class="roulette-ct-bets f-m">Bets <span class="bets-total" id="betTotalCT">{{latest_bets_total_arr.0}}</span></span>
+                <div class="roulette-total-bets flex align-center">
+                    <span class="f-m" id="totalBetValueCT">{{latest_bets_total_arr.1}}</span>
+                    <img src="{% static 'images/coin.svg' %}" alt="Coin">
+                </div>
+                <img src="{% static 'images/fullTri.svg' %}" alt="Toggle Open/Close" class="mobile-better-toggle">
+            </div>
+            <div id="blue-betters" class="users-bets flex flex-column">
+                {% for bets in latest_bets %} 
+                    {% if bets.1 == 'blue' %}
+                        <div class="bet-card flex align-center">
+                            <img src="{{bets.3}}" alt="User Profile">
+                            <span>{{ bets.0 }}</span>
+                            <div class="bet-value flex align-center">
+                                <span class='f-m'>{{ bets.2 }}</span>
+                                <img src="{% static 'images/coin.svg' %}" alt="Coin">
+                            </div>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+        <div class="flex flex-column">
+            <div class="bet-header flex align-center">
+                <img src="{% static 'images/chipie-logo-2.svg' %}" alt="CT coin">
+                <span class="roulette-ct-bets f-m">Bets <span class="bets-total" id="betTotalBonus">{{latest_bets_total_arr.4}}</span></span>
+                <div class="roulette-total-bets flex align-center">
+                    <span class="f-m" id="totalBetValueBonus">{{latest_bets_total_arr.5}}</span>
+                    <img src="{% static 'images/coin.svg' %}" alt="Coin">
+                </div>
+                <img src="{% static 'images/fullTri.svg' %}" alt="Toggle Open/Close" class="mobile-better-toggle">
+            </div>
+            <div id="green-betters" class="users-bets flex flex-column">
+                {% for bets in latest_bets %} 
+                    {% if bets.1 == 'green' %}
+                        <div class="bet-card flex align-center">
+                            <img src="{{bets.3}}" alt="User Profile">
+                            <span class='f-m'>{{ bets.0 }}</span>
+                            <div class="bet-value flex align-center">
+                                <span class='f-m'>{{ bets.2 }}</span>
+                                <img src="{% static 'images/coin.svg' %}" alt="Coin">
+                            </div>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+        <div class="flex flex-column">
+            <div class="bet-header flex align-center">
+                <img src="{% static 'images/TT coin.svg' %}" alt="CT coin">
+                <span class="roulette-ct-bets f-m">Bets <span class="bets-total" id="betTotalTT">{{latest_bets_total_arr.2}}</span></span>
+                <div class="roulette-total-bets flex align-center">
+                    <span class="f-m" id="totalBetValueTT">{{latest_bets_total_arr.3}}</span>
+                    <img src="{% static 'images/coin.svg' %}" alt="Coin">
+                </div>
+                <img src="{% static 'images/fullTri.svg' %}" alt="Toggle Open/Close" class="mobile-better-toggle">
+            </div>
+            <div id="red-betters" class="users-bets flex flex-column">
+                {% for bets in latest_bets %} 
+                    {% if bets.1 == 'red' %}
+                        <div class="bet-card flex align-center">
+                            <img src="{{bets.3}}" alt="User Profile">
+                            <span>{{ bets.0 }}</span>
+                            <div class="bet-value flex align-center">
+                                <span class='f-m'>{{ bets.2 }}</span>
+                                <img src="{% static 'images/coin.svg' %}" alt="Coin">
+                            </div>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+        
+        
+        
+    </section>
+    <!-- <button onclick="roll_roulette(14)">Test</button> -->
+</section>
+
+{% if request.user.is_authenticated %}
+<div class="bet-sidebar flex flex-column" id="betBar">
+    <div class="bet-sidebar-container flex flex-column">
+        <section class="sidebar-section roulette-choose-chip flex flex-column">
+            <span class="sidebar-title f-ss s-item">Choose Chip</span>
+            <div class="flex roulette-chips justify-between s-item">
+                <div class="flex flex-column align-center">
+                    <input type="radio" name="r_chip" id="r_ct" class="sidebar-radio" value="blue">
+                    <label for="r_ct"><img src="{% static 'images/CT coin.svg' %}" alt="CT Chip" class="roulette-chip"></label>
+                    <span>2x</span>
+                </div>
+                
+                <div class="flex flex-column align-center">
+                    <input type="radio" name="r_chip" id="r_bonus" class="sidebar-radio" value="green">
+                    <label for="r_bonus"><img src="{% static 'images/chipie-logo-2.svg' %}" alt="Bonus Chip" class="roulette-chip"></label>
+                    <span>14x</span>
+                </div>
+                
+
+                <div class="flex flex-column align-center">
+                    <input type="radio" name="r_chip" id="r_t" class="sidebar-radio" value="red">
+                    <label for="r_t"><img src="{% static 'images/TT coin.svg' %}" alt="T Chip" class="roulette-chip"></label>
+                    <span>2x</span>
+                </div>
+                
+                
+                
+                
+            </div>
+        </section>
+
+        <section class="sidebar-section roulette-bet-value flex flex-column">
+            <span class="sidebar-title s-item f-ss">Bet Amount</span>
+            <div class="bet-field s-item">
+                <input type="number" name="betValue" id="bet-value" placeholder="1337.69" class="input bet-input f-m">
+                <img src="{% static 'images/coin.svg' %}" alt="Coin" class="input-coin">
+            </div>
+            <div class="bet-value-fixed flex s-item justify-between">
+                <button class="f-xs add-to-bet" onclick="addToBetAmount(0)">0</button>
+                <button class="f-xs add-to-bet" onclick="addToBetAmount(0.1)">+0.1</button>
+                <button class="f-xs add-to-bet" onclick="addToBetAmount(1)">+1</button>
+                <button class="f-xs add-to-bet" onclick="addToBetAmount(-1)">+1/2</button>
+                <button class="f-xs add-to-bet" onclick="addToBetAmount(-2)">+2x</button>
+                <button class="f-xs add-to-bet" onclick="addToBetAmount(-3)">MAX</button>
+            </div>
+            
+        </section>
+        <!-- <div class="betting-field flex">
+            <label for="bet-value">Bet amount:</label>
+            <input type="number" name="betValue" id="bet-value">
+        </div>
+           
+        <div class="bet-choice flex justify-between">
+            <a class="button bet-submit" id="bet-submit-blue" data-color="blue">Blue</a>
+            <a class="button bet-submit" id="bet-submit-green" data-color="green">Green</a>
+            <a class="button bet-submit" id="bet-submit-red" data-color="red">Red</a>
+        </div> -->
+    </div>
+
+    <section class="sidebar-confirm-bet sidebar-section">
+        <button class="sidebar-place-bet f-m" onclick="betSubmit()">Bet</button>
+    </section>
+    
+</div>
+    
+{% else %}
+
+{% endif %}
+
+
+
+
+
+
+<!-- Script -->
+{% if request.user.is_superuser %}
+    {{ request.user.name|json_script:"json-name" }}
+{% else %}
+    {{ request.user.social_auth.get.extra_data.player.steamid|json_script:"json-name" }}
+{% endif %}
+
+{{ request.user.username|json_script:"json-username" }}
+<script>
+    function runCountdown(counter) {
+        rolling = true
+        var endTime = new Date(Date.now() + 29000 - '{{timeDiff}}'*1000)
+        console.log(endTime)
+        var counter = 0
+
+        document.querySelector('#rTimer').classList.remove('d-none')
+
+        var interval = setInterval(function() {
+            var elapsedTime = endTime - Date.now();
+            document.getElementById("timer").innerHTML = (elapsedTime / 1000).toFixed(2)
+            if(elapsedTime <= 25000){
+                rolling = false
+            }
+            if(elapsedTime <= 0){
+                clearInterval(interval);
+                document.querySelector('#rTimer').classList.add('d-none')
+                rolling = true
+            }
+        }, 10);
+}
+
+    window.onload = runCountdown(0)
+
+    var rolling
+
+    function scrollToBottom() {
+            let objDiv = document.getElementById("chat-messages")
+            objDiv.scrollTop = objDiv.scrollHeight
+    }
+
+        scrollToBottom()
+
+        {% comment %} const name = JSON.parse(document.getElementById('json-name').textContent)
+        const userName = JSON.parse(document.getElementById('json-username').textContent) {% endcomment %}
+        const steamName = '{{user}}'
+
+        const rouletteSocket = new WebSocket('wss://' + window.location.host + '/ws/game/roulette/')
+        const rouletteBetSocket = new WebSocket('wss://' + window.location.host + '/ws/game/roulette_bet/')
+        console.log(chatSocket);
+        console.log(rouletteSocket);
+        console.log(rouletteBetSocket);
+
+        rouletteSocket.onopen = function (e) {
+            console.log('Socket connected')
+        }
+    
+        rouletteSocket.onmessage = async function (e) {
+            //console.log(e)
+            const data = JSON.parse(e.data)
+
+            console.log(data)
+            
+                if(data.round_result === 0 || data.round_result > 0) {
+                    end = 24000
+                    if (document.hidden) {
+                        end = 30000
+                    }
+                    document.getElementById('rouletteBoardImg').style.transition = 'none'
+                    document.getElementById('rouletteBoardImg').style.transform = 'rotate(0deg)'
+                    await roll_roulette(data.round_result)
+
+                    update_coins()
+
+                    await load_previous_results(data.round_result)
+
+                    document.querySelector('#prev-results-roulette').style.transition = '0.3s linear'
+
+                    function reset() {
+                        document.querySelector('#blue-betters').innerHTML = ''
+                        document.querySelector('#green-betters').innerHTML = ''
+                        document.querySelector('#red-betters').innerHTML = ''
+
+                        document.querySelector('#betTotalCT').innerHTML = '0'
+                        document.querySelector('#betTotalTT').innerHTML = '0'
+                        document.querySelector('#betTotalBonus').innerHTML = '0'
+
+                        document.querySelector('#totalBetValueCT').innerHTML = '0'
+                        ctBets = 0
+                        document.querySelector('#totalBetValueTT').innerHTML = '0'
+                        tBets = 0
+                        document.querySelector('#totalBetValueBonus').innerHTML = '0'
+                        bonusBets = 0
+                    }
+                    reset()
+                    time_start(end)
+                }
+
+                console.log("Round result:" + data.round_result) 
+
+            }
+
+        async function roll_roulette(result){
+            if (!document.hidden) {
+                await sleep(100)
+            
+                document.getElementById('rouletteBoardImg').style.transition = 'all 5s cubic-bezier(.08,.6,0,1)'
+            }
+            if(result === 0){
+                scrollTo = Math.floor(Math.random() * (2459 - 2437)) + 2437 
+                document.getElementById('rouletteBoardImg').style.transform = 'rotate(' + scrollTo + 'deg)'
+            }
+            else if (result >= 1 && result <= 7){
+                if(result === 1){
+                    scrollTo = Math.floor(Math.random() * (2483 - 2461)) + 2461
+                } else if(result === 2) {
+                    scrollTo = Math.floor(Math.random() * (2531 - 2509)) + 2509
+                }else if(result === 3) {
+                    scrollTo = Math.floor(Math.random() * (2579 - 2557)) + 2557
+                }else if(result === 4) {
+                    scrollTo = Math.floor(Math.random() * (2627 - 2605)) + 2605
+                }else if(result === 5) {
+                    scrollTo = Math.floor(Math.random() * (2675 - 2653)) + 2653
+                }else if(result === 6) {
+                    scrollTo = Math.floor(Math.random() * (2723 - 2701)) + 2701
+                }else if(result === 7) {
+                    scrollTo = Math.floor(Math.random() * (2771 - 2749)) + 2749
+                }
+                document.getElementById('rouletteBoardImg').style.transform = 'rotate(' + scrollTo + 'deg)'
+            }
+            else if (result >=8 && result <= 14){
+                if(result === 8){
+                    scrollTo = Math.floor(Math.random() * (2507 - 2485)) + 2485
+                } else if(result === 9) {
+                    scrollTo = Math.floor(Math.random() * (2555 - 2533)) + 2533
+                }else if(result === 10) {
+                    scrollTo = Math.floor(Math.random() * (2603 - 2581)) + 2581
+                }else if(result === 11) {
+                    scrollTo = Math.floor(Math.random() * (2651 - 2629)) + 2629
+                }else if(result === 12) {
+                    scrollTo = Math.floor(Math.random() * (2699 - 2677)) + 2677
+                }else if(result === 13) {
+                    scrollTo = Math.floor(Math.random() * (2747 - 2725)) + 2725
+                }else if(result === 14) {
+                    scrollTo = Math.floor(Math.random() * (2795 - 2773)) + 2773
+                }
+                document.getElementById('rouletteBoardImg').style.transform = 'rotate(' + scrollTo + 'deg)'
+            }
+
+            if (!document.hidden) {
+                await sleep(5500)
+            }
+        }
+
+        const sleep = ms => {
+            return new Promise(resolve => setTimeout(resolve, ms))
+        }
+
+        // async function scroll_roulette(result){       
+        //     for(i = 0; i < 8; i++){
+        //         for(j = 0; j < 15; j++){
+        //             var element = ''
+        //             if(j === 0 || j === 2 || j === 4 || j === 6 || j === 9 || j === 11 || j === 13){
+        //                 element = '<div id="roll'+i+'b'+j+'" style="width: 100px">Blue</div>'
+        //             }
+        //             else if(j === 1 || j === 3 || j === 5 || j === 8 || j === 10 || j === 12 || j === 14){
+        //                 element = '<div id="roll'+i+'r'+j+'" style="width: 100px">Red</div>'
+        //             }
+        //             else if(j === 7){
+        //                 element = '<div id="roll'+i+'g" style="width: 100px">Green</div>'
+        //             }
+
+        //             document.getElementById('roulette-g').innerHTML += element
+        //         }
+        //     }
+        //     await sleep(100)
+        //     await roll_roulette(result)
+        // }
+        
+        var i = 0
+        
+
+        function test_run(result){
+            return new Promise((resolve, reject) => {
+                var endTime = new Date(Date.now() + 3000)
+                var start = 0
+                var interval = setInterval(function() {
+                    var elapsedTime = endTime - Date.now();
+                    if(start == 0) {
+                        document.querySelector('#winner').innerHTML = "Roll: GREEN"
+                        start++
+                        if(start == 14){
+                            start = 0
+                        }
+                    }
+                    else if(start == 1 || start == 3 || start == 5 || start == 7 || start == 9 || start == 11 || start == 13){
+                        start++
+                        document.querySelector('#winner').innerHTML = "Roll: BLUE"
+                        if(start == 14){
+                            start = 0
+                        }
+                    }
+                    else if(start == 2 || start == 4 || start == 6 || start == 8 || start == 10 || start == 12 || start == 14){
+                        start++
+                        document.querySelector('#winner').innerHTML = "Roll: RED"
+                        if(start == 14){
+                            start = 0
+                        }
+                    }
+
+                    console.log(start)
+                    if(elapsedTime <= 0){
+                        clearInterval(interval);
+                        resolve(result)
+                    }
+                }, 200);
+            })
+        } 
+
+        function time_start(end) {
+            // var startTime = Date.now();
+            rolling = false
+            var endTime = new Date(Date.now() + end)
+            
+
+            var interval = setInterval(function() {
+                if(document.querySelector('#rTimer').classList.contains('d-none')){
+                    document.querySelector('#rTimer').classList.remove('d-none')
+                }
+                var elapsedTime = endTime - Date.now();
+                document.getElementById("timer").innerHTML = (elapsedTime / 1000).toFixed(2)
+                if(elapsedTime <= 0){
+                    clearInterval(interval);
+                    document.querySelector('#rTimer').classList.add('d-none')
+                    rolling = true
+                    return
+                }
+            }, 10);
+        }
+
+        function update_coins() {
+            $.ajax({
+                method: "POST",
+                headers: { "X-CSRFToken": token },
+                url: "/api/coins/",
+                data: {},
+                success: function(data) {
+                    console.log(data) // check out how data is structured
+
+                    // Update the coin amount
+                    document.querySelector('#user_coins').innerHTML = data.coins
+                }
+            })
+        };
+
+        async function load_previous_results(result) {
+            console.log(result + 'xd')
+            if(result == 1 || result == 2 || result == 3 || result == 4 || result == 5 || result == 6 || result == 7){
+                document.querySelector('#prev-results-roulette').innerHTML += "<div class='prev-roulette-result' style='visibility: hidden'><img src='{% static 'images/CT coin.svg' %}' alt='Prev result blue'></div>"
+            } else if (result == 8 || result == 9 || result == 10 || result == 11 || result == 12 || result == 13 || result == 14) {
+                document.querySelector('#prev-results-roulette').innerHTML += "<div class='prev-roulette-result' style='visibility: hidden'><img src='{% static 'images/TT coin.svg' %}' alt='Prev result green'></div>"
+            } else if (result == 0){
+                document.querySelector('#prev-results-roulette').innerHTML += "<div class='prev-roulette-result' style='visibility: hidden'><img src='{% static 'images/chipie-logo.svg' %}' alt='Prev result red'></div>"
+            }
+            last = document.querySelector('#prev-results-roulette div:first-child')
+            document.querySelector('#prev-results-roulette').style.marginLeft = '-'+(last.offsetWidth *2)+'px';
+            newest = document.querySelector('#prev-results-roulette div:last-child')
+            newest.style.visibility = 'visible'
+            if (!document.hidden) {
+                await sleep(300)
+            }
+            document.querySelector('#prev-results-roulette').style.transition = 'none'
+            last.remove()
+            document.querySelector('#prev-results-roulette').style.marginLeft = '0px';
+            if (!document.hidden) {
+                await sleep(100)
+            }
+        }
+    
+        rouletteSocket.onclose = function (e) {
+            console.log('Socket closed')
+        }
+    
+        // document.querySelector('.bet-submit').onclick = function(e) 
+        $('.bet-submit').click(function() {
+            if(rolling == false){
+                const betValue = document.getElementById('bet-value').value
+                const betChoice = this.dataset.color
+
+                console.log(typeof(betValue))
+        
+                rouletteBetSocket.send(JSON.stringify({
+                    'steamid': name,
+                    'betValue': betValue,
+                    'bet_choice': betChoice,
+                    'steamname': steamName
+                }))
+            } else {
+                console.log('error')
+            }
+        })
+
+        function betSubmit() {
+            if(rolling == false){
+                const betValue = document.getElementById('bet-value').value
+                if(betValue <= 0){
+                    console.log("Bet can't be 0 or less")
+                    return
+                }
+                const betChoice = document.querySelector('input[name="r_chip"]:checked').value
+                if(betChoice === 'blue' || betChoice === 'red' || betChoice === 'green'){
+                    console.log(betChoice)
+
+                    rouletteBetSocket.send(JSON.stringify({
+                        'steamid': name,
+                        'betValue': betValue,
+                        'bet_choice': betChoice,
+                        'steamname': steamName,
+                        'avatar': "{{request.user.social_auth.get.extra_data.player.avatarfull}}"
+                    }))
+                } else {
+                    console.log('Bet choice not correct or not chosen')
+                    return
+                }
+            }
+        }
+
+        var ctBets = Number('{{latest_bets_total_arr.1}}'), bonusBets = Number('{{latest_bets_total_arr.5}}'), tBets = Number('{{latest_bets_total_arr.3}}');
+
+        rouletteBetSocket.onmessage = function(e) {
+            const data = JSON.parse(e.data)
+            update_coins()
+
+            // for(const key in data.bets){
+            //     if(data.bets[key].bet_color == 'blue'){
+            //         document.querySelector('#blue-betters').innerHTML +="<div class='bet-card flex align-center'><img src='{{request.user.social_auth.get.extra_data.player.avatarfull}}' alt='User Profile'><span class='f-m'>"+ data.bets[key].username +"</span><div class='bet-value flex align-center'><span class='f-m'>"+ data.bets[key].bet_value +"</span><img src='{% static 'images/coin.svg' %}' alt='Coin'></div></div>"
+            //         document.querySelector('#betTotalCT').innerHTML = document.querySelector('#blue-betters').childElementCount
+            //     } else if(data.bets[key].bet_color == 'red'){
+            //         document.querySelector('#red-betters').innerHTML += "<div class='bet-card flex align-center'><img src='{{request.user.social_auth.get.extra_data.player.avatarfull}}' alt='User Profile'><span class='f-m'>"+ data.bets[key].username +"</span><div class='bet-value flex align-center'><span class='f-m'>"+ data.bets[key].bet_value +"</span><img src='{% static 'images/coin.svg' %}' alt='Coin'></div></div>"
+            //         document.querySelector('#betTotalTT').innerHTML = document.querySelector('#red-betters').childElementCount
+            //     } else if(data.bets[key].bet_color == 'green') {
+            //         document.querySelector('#green-betters').innerHTML += "<div class='bet-card flex align-center'><img src='{{request.user.social_auth.get.extra_data.player.avatarfull}}' alt='User Profile'><span class='f-m'>"+ data.bets[key].username +"</span><div class='bet-value flex align-center'><span class='f-m'>"+ data.bets[key].bet_value +"</span><img src='{% static 'images/coin.svg' %}' alt='Coin'></div></div>"
+            //         document.querySelector('#betTotalBonus').innerHTML = document.querySelector('#green-betters').childElementCount
+            //     }
+            // }
+            if(data.betcolor == 'blue'){
+                    ctBets += Number(data.betvalue)
+                    x = document.querySelector('#blue-betters').childElementCount
+                    // document.querySelector('#blue-betters').innerHTML +="<div class='bet-card flex align-center'><img src='{{request.user.social_auth.get.extra_data.player.avatarfull}}' alt='User Profile'><span class='f-m'>"+ data.steamname +"</span><div class='bet-value flex align-center'><span class='f-m'>"+ Number(data.betvalue).toFixed(2) +"</span><img src='{% static 'images/coin.svg' %}' alt='Coin'></div></div>"
+                    $('#blue-betters').append('<div class="bet-card flex align-center" id="blue-'+x+'"></div>')
+                    $('#blue-betters #blue-'+x+'').append('<img src="'+data.avatar+'" alt="User Profile"><span class="f-m">'+ data.steamname +'</span><div class="bet-value flex align-center"><span class="f-m">'+ Number(data.betvalue).toFixed(2) +'</span><img src="{% static "images/coin.svg" %}" alt="Coin"></div>').hide().slideDown()
+                    document.querySelector('#betTotalCT').innerHTML = document.querySelector('#blue-betters').childElementCount
+                    document.querySelector('#totalBetValueCT').innerHTML = ctBets.toFixed(2)
+                } else if(data.betcolor == 'red'){
+                    tBets += Number(data.betvalue)
+                    x = document.querySelector('#red-betters').childElementCount
+                    // document.querySelector('#red-betters').innerHTML += "<div class='bet-card flex align-center'><img src=''+data.avatar+'' alt='User Profile'><span class='f-m'>"+ data.steamname +"</span><div class='bet-value flex align-center'><span class='f-m'>"+ Number(data.betvalue).toFixed(2) +"</span><img src='{% static 'images/coin.svg' %}' alt='Coin'></div></div>"
+                    $('#red-betters').append('<div class="bet-card flex align-center" id="red-'+x+'"></div>')
+                    $('#red-betters #red-'+x+'').append('<img src="'+data.avatar+'" alt="User Profile"><span class="f-m">'+ data.steamname +'</span><div class="bet-value flex align-center"><span class="f-m">'+ Number(data.betvalue).toFixed(2) +'</span><img src="{% static "images/coin.svg" %}" alt="Coin"></div>').hide().slideDown()
+                    document.querySelector('#betTotalTT').innerHTML = document.querySelector('#red-betters').childElementCount
+                    document.querySelector('#totalBetValueTT').innerHTML = tBets.toFixed(2)
+                } else if(data.betcolor == 'green') {
+                    bonusBets += Number(data.betvalue)
+                    x = document.querySelector('#green-betters').childElementCount
+                    // document.querySelector('#green-betters').innerHTML += "<div class='bet-card flex align-center'><img src=''+data.avatar+'' alt='User Profile'><span class='f-m'>"+ data.steamname +"</span><div class='bet-value flex align-center'><span class='f-m'>"+ Number(data.betvalue).toFixed(2) +"</span><img src='{% static 'images/coin.svg' %}' alt='Coin'></div></div>"
+                    $('#green-betters').append('<div class="bet-card flex align-center" id="green-'+x+'"></div>')
+                    $('#green-betters #green-'+x+'').append('<img src="'+data.avatar+'" alt="User Profile"><span class="f-m">'+ data.steamname +'</span><div class="bet-value flex align-center"><span class="f-m">'+ Number(data.betvalue).toFixed(2) +'</span><img src="{% static "images/coin.svg" %}" alt="Coin"></div>').hide().slideDown()
+                    document.querySelector('#betTotalBonus').innerHTML = document.querySelector('#green-betters').childElementCount
+                    document.querySelector('#totalBetValueBonus').innerHTML = bonusBets.toFixed(2)
+                }
+
+        }
+
+        rouletteBetSocket.onclose = function (e) {
+            console.log('Socket closed')
+        }
+
+    // Mobile betters acc
+    
+
+    window.onload = function (){
+        var acc = document.getElementsByClassName("bet-header");
+        var i;
+
+        for (i = 0; i < acc.length; i++) {
+            acc[i].addEventListener("click", function() {
+                /* Toggle between adding and removing the "active" class,
+                to highlight the button that controls the panel */
+                this.classList.toggle("active-toggle");
+
+                /* Toggle between hiding and showing the active panel */
+                var panel = this.nextElementSibling;
+                if (panel.style.maxHeight) {
+                    panel.style.maxHeight = null;
+                } else {
+                    n = panel.childElementCount
+                    panel.style.maxHeight = panel.scrollHeight  / n * 10 + 'px';
+                    console.log(panel.scrollHeight)
+                }
+            });
+        }
+    }
+
+    {% comment %} async function addToBetAmount(value){
+        if(value === -1){
+           userCoins = await get_coins()
+           console.log(userCoins)
+           betToAdd = (Number(userCoins) / 2).toFixed(2)
+        }
+        else if(value === -2){
+            currentBetValue = document.querySelector('#bet-value').value
+            if(currentBetValue > 0){
+                betToAdd = (Number(currentBetValue) * 2).toFixed(2)
+            }
+            else {
+                betToAdd = 0
+            }
+        }
+        else if(value === -3){
+            userCoins = await get_coins()
+            console.log(userCoins + 'lmao')
+            betToAdd = Number(userCoins).toFixed(2)
+        }
+        else if (value === 0){
+            betToAdd = 0
+        }
+        else{
+            currentBetValue = document.querySelector('#bet-value').value
+            betToAdd = (Number(value) + Number(currentBetValue)).toFixed(2)
+        }
+
+        console.log(betToAdd)
+        document.querySelector('#bet-value').value = betToAdd
+    } {% endcomment %}
+
+    
+
+
+</script>
+
+{% endblock content %}

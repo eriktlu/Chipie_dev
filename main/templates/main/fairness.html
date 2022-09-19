@@ -1,0 +1,326 @@
+{% extends 'main.html' %}
+
+{% load static %}
+
+{% block content %}
+
+<section class="fairness container">
+    <div class="fairness-content">
+
+        <h1>Fairness</h1>
+
+        <div class="tab tab-desktop">
+            <button class="tablinks active" onclick="openFairness(event, 'roulette-fairness')">Roulette</button>
+            <button class="tablinks" onclick="openFairness(event, 'crash-fairness')">Crash</button>
+            <button class="tablinks" onclick="openFairness(event, 'battle-fairness')">Case Battles</button>
+        </div>
+
+        <div class="tab tab-mobile">
+            <button class="tablinks fairness-roulette-tablink-mobile active"  onclick="openFairness(event, 'roulette-fairness')"><img src="{% static 'images/roulette-icon.svg' %}" class="fairness-roulette-tablink-mobile"></button>
+            <button class="tablinks fairness-crash-tablink-mobile" onclick="openFairness(event, 'crash-fairness')"><img src="{% static 'images/rocket.svg' %}" class="fairness-crash-tablink-mobile"></button>
+            <button class="tablinks fairness-battle-tablink-mobile" onclick="openFairness(event, 'battle-fairness')"><img src="{% static 'images/caseBattle-icon.svg' %}" class="fairness-battle-tablink-mobile"></button>
+        </div>
+
+        <div id="roulette-fairness" class="tabcontent">
+            <h3>Roulette Technical Details</h3>
+
+            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus convallis ornare porttitor. Mauris congue mauris nec posuere luctus. Integer et interdum dolor. Nunc egestas euismod congue. Vivamus justo urna, aliquet sit amet leo ac, condimentum tristique urna. Aenean purus ligula, iaculis rutrum rutrum consectetur, efficitur et lectus. Aliquam mattis leo quis dolor tempor, at laoreet ex dictum. Nam neque ligula, volutpat in ultrices ac, sollicitudin quis dui. Sed id sem at ante porta scelerisque. Suspendisse porttitor ac augue sit amet dictum.
+              <br><br>
+              Nam at augue convallis, blandit nisi quis, mollis magna. Nunc laoreet pellentesque accumsan. Quisque dignissim, urna sed facilisis ornare, sem metus vehicula nisl, non pretium nisl leo ac nibh. Sed sed nisl felis. Morbi sed finibus erat. Nulla sit amet dia. Aenean purus ligula, iaculis rutrum rutrum consectetur, efficitur et lectus. Aliquam mattis leo quis dolor tempor, at laoreet ex dictum. Nam neque ligula, volutpat in ultrices ac, sollicitudin quis dui. Sed id sem at ante porta scelerisque. Suspendisse porttitor ac augue sit amet dictum.
+            </p>
+
+            <div class="fairness-code">
+              <p>
+                NÄIDIS!!!! <br>
+                $server_seed = "96f3e04d221ca1b2048cc3b3b980845hah8955a459aj"; <br>
+                $public_seed = "46067058379"; <br>
+                $round = "321"; <br>
+                $hash = hash('sha256', $server_seed . "-" . $public_seed . "-" . $round); <br>
+                $roll = hexdec(substr($hash, 0, 8)) % 15; <br>
+                if ($roll == 0) $roll_colour = 'bonus'; <br>
+                elseif ($roll >= 1 and $roll <= 7) $roll_colour = 'orange'; <br>
+                elseif ($roll >= 8 and $roll <= 14) $roll_colour = 'black'; <br>
+                <br>
+                echo("Roll: $roll\nColour: $roll_colour");
+              </p>
+            </div>
+
+            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus convallis ornare porttitor. Mauris congue mauris nec posuere luctus. Integer et interdum dolor. Nunc egestas euismod congue. Vivamus justo urna, aliquet sit amet leo ac, condimentum tristique urna.</p>
+
+            <table class="table-desktop">
+                <tr>
+                  <th class="dataA">Date</th>
+                  <th class="dataB">Server Secret</th>
+                  <th class="dataC">Public Secret</th>
+                  <th class="dataD">Round</th>
+                </tr>
+                {% for roulette in roulettes %}
+                  {% if not forloop.first %}
+                  
+                    <tr>
+                      <td>{{roulette.round_start_time|date:"d/m/y"}}</td>
+                      <td class="f-m">{{roulette.used_server_seed}}</td>
+                      <td class="f-m">{{roulette.used_public_seed.public_seed}}</td>
+                      <td>{{roulette.round_number}}</td>
+                    </tr>
+                  {% else %}
+                    <tr>
+                      <td>{{roulette.round_start_time|date:"d/m/y"}}</td>
+                      <td class="f-m">{{roulette.used_server_seed.hashed_server_seed}}</td>
+                      <td class="f-m">{{roulette.used_public_seed.public_seed}}</td>
+                      <td>{{roulette.round_number}}</td>
+                    </tr>
+                  {% endif %}
+                {% endfor %}
+                <tr>
+                  <td class="page-count">Page {{ roulettes.number }} of {{ roulettes.paginator.num_pages }}</td>
+                  <td></td>
+                  <td class="page-before">{% if roulettes.has_previous %}<a href="?roulette={{ roulettes.previous_page_number }}"><img src="{% static 'images/arrow-left.png' %}" alt="Previous"></a>{% endif %}</td>
+                  <td class="page-next">{% if roulettes.has_next %}<a href="?roulette={{ roulettes.next_page_number }}"><img src="{% static 'images/arrow-right.png' %}" alt="Next"></a>{% endif %}</td>
+                </tr>
+              </table>
+    
+              <table class="table-mobile">
+                {% for roulette in roulettes %}
+                  {% if not forloop.first %}
+                    <tr>
+                      <th>Date</th>
+                      <td>{{roulette.round_start_time|date:"d/m/y"}}</td>
+                      <th>Server Secret</th>
+                      <td>{{roulette.used_server_seed}}</td>
+                      <th>Public Secret</th>
+                      <td>{{roulette.used_public_seed.public_seed}}</td>
+                      <th>Round</th>
+                      <td>{{roulette.round_number}}</td>
+                    </tr>
+                  {% else %}
+                    <tr>
+                      <th>Date</th>
+                      <td>{{roulette.round_start_time|date:"d/m/y"}}</td>
+                      <th>Server Secret</th>
+                      <td>{{roulette.used_server_seed.hashed_server_seed}}</td>
+                      <th>Public Secret</th>
+                      <td>{{roulette.used_public_seed.public_seed}}</td>
+                      <th>Round</th>
+                      <td>{{roulette.round_number}}</td>
+                    </tr>
+                  {% endif %}
+                {% endfor %}
+                <tr class="table-mobile-paginator">
+                  <td class="page-count">Page {{ roulettes.number }} of {{ roulettes.paginator.num_pages }}</td>
+                  <td class="page-next">{% if roulettes.has_previous %}<a class="paginator-previous-button" href="?roulette={{ roulettes.previous_page_number }}"><img src="{% static 'images/arrow-left.png' %}" alt="Previous"></a>{% endif %}{% if roulettes.has_next %}<a href="?roulette={{ roulettes.next_page_number }}"><img src="{% static 'images/arrow-right.png' %}" alt="Next"></a>{% endif %}</td>
+                </tr>
+              </table>
+        </div>
+        
+        <div id="crash-fairness" class="tabcontent">
+            <h3>Crash Technical Details</h3>
+            
+            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus convallis ornare porttitor. Mauris congue mauris nec posuere luctus. Integer et interdum dolor. Nunc egestas euismod congue. Vivamus justo urna, aliquet sit amet leo ac, condimentum tristique urna. Aenean purus ligula, iaculis rutrum rutrum consectetur, efficitur et lectus. Aliquam mattis leo quis dolor tempor, at laoreet ex dictum. Nam neque ligula.
+              <br><br>
+              Nam at augue convallis, blandit nisi quis, mollis magna. Nunc laoreet pellentesque accumsan. Quisque dignissim, urna sed facilisis ornare, sem metus vehicula nisl, non pretium nisl leo ac nibh. Sed sed nisl felis. Morbi sed finibus erat. Nulla sit amet dia. Aenean purus ligula, iaculis rutrum rutrum consectetur, efficitur et lectus. Aliquam mattis leo quis dolor tempor, at laoreet ex dictum. Nam neque ligula, volutpat in ultrices ac, sollicitudin quis dui. Sed id sem at ante porta scelerisque. Suspendisse porttitor ac augue sit amet dictum.
+            </p>
+
+            <div class="fairness-code">
+              <p>
+                NÄIDIS!!!! <br>
+                $server_seed = "96f3e04d221ca1b2048cc3b3b980845hah8955a459aj"; <br>
+                $public_seed = "46067058379"; <br>
+                $round = "321"; <br>
+                $hash = hash('sha256', $server_seed . "-" . $public_seed . "-" . $round); <br>
+                $roll = hexdec(substr($hash, 0, 8)) % 15; <br>
+                if ($roll == 0) $roll_colour = 'bonus'; <br>
+                elseif ($roll >= 1 and $roll <= 7) $roll_colour = 'orange'; <br>
+                elseif ($roll >= 8 and $roll <= 14) $roll_colour = 'black'; <br>
+                <br>
+                echo("Roll: $roll\nColour: $roll_colour");
+              </p>
+            </div>
+
+            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus convallis ornare porttitor. Mauris congue mauris nec posuere luctus. Integer et interdum dolor. Nunc egestas euismod congue. Vivamus justo urna, aliquet sit amet leo ac, condimentum tristique urna.</p> 
+
+            <table class="table-desktop">
+            <tr>
+                <th class="dataA">Date</th>
+                <th class="dataB">Server Secret</th>
+                <th class="dataC">Public Secret</th>
+                <th class="dataD">Round</th>
+            </tr>
+            {% for crash in crashes %}
+                  {% if not forloop.first %}
+                  
+                    <tr>
+                      <td>{{crash.round_start_time|date:"d/m/y"}}</td>
+                      <td class="f-m">{{crash.used_server_seed}}</td>
+                      <td class="f-m">{{crash.used_public_seed.public_seed}}</td>
+                      <td>{{crash.round_number}}</td>
+                    </tr>
+                  {% else %}
+                    <tr>
+                      <td>{{crash.round_start_time|date:"d/m/y"}}</td>
+                      <td class="f-m">{{crash.used_server_seed.hashed_server_seed}}</td>
+                      <td class="f-m">{{crash.used_public_seed.public_seed}}</td>
+                      <td>{{crash.round_number}}</td>
+                    </tr>
+                  {% endif %}
+                {% endfor %}
+                <tr>
+                  <td class="page-count">Page {{ crashes.number }} of {{ crashes.paginator.num_pages }}</td>
+                  <td></td>
+                  <td class="page-before">{% if crashes.has_previous %}<a href="?crash={{ crashes.previous_page_number }}"><img src="{% static 'images/arrow-left.png' %}" alt="Previous"></a>{% endif %}</td>
+                  <td class="page-next">{% if crashes.has_next %}<a href="?crash={{ crashes.next_page_number }}"><img src="{% static 'images/arrow-right.png' %}" alt="Next"></a>{% endif %}</td>
+                </tr>
+          </table>
+
+          <table class="table-mobile">
+            {% for crash in crashes %}
+              {% if not forloop.first %}
+                <tr>
+                  <th>Date</th>
+                  <td>{{crash.round_start_time|date:"d/m/y"}}</td>
+                  <th>Server Secret</th>
+                  <td>{{crash.used_server_seed}}</td>
+                  <th>Public Secret</th>
+                  <td>{{crash.used_public_seed.public_seed}}</td>
+                  <th>Round</th>
+                  <td>{{crash.round_number}}</td>
+                </tr>
+              {% else %}
+                <tr>
+                  <th>Date</th>
+                  <td>{{crash.round_start_time|date:"d/m/y"}}</td>
+                  <th>Server Secret</th>
+                  <td>{{crash.used_server_seed.hashed_server_seed}}</td>
+                  <th>Public Secret</th>
+                  <td>{{crash.used_public_seed.public_seed}}</td>
+                  <th>Round</th>
+                  <td>{{crash.round_number}}</td>
+                </tr>
+              {% endif %}
+            {% endfor %}
+            <tr class="table-mobile-paginator">
+              <td class="page-count">Page {{ crashes.number }} of {{ crashes.paginator.num_pages }}</td>
+              <td class="page-next">{% if crashes.has_previous %}<a class="paginator-previous-button" href="?crash={{ crashes.previous_page_number }}"><img src="{% static 'images/arrow-left.png' %}" alt="Previous"></a>{% endif %}{% if crashes.has_next %}<a href="?crash={{ crashes.next_page_number }}"><img src="{% static 'images/arrow-right.png' %}" alt="Next"></a>{% endif %}</td>
+            </tr>
+          </table>
+        </div>
+        
+        <div id="battle-fairness" class="tabcontent">
+            <h3>Case Battle Technical Details</h3>
+            
+            <p>Vivamus convallis ornare porttitor. Mauris congue mauris nec posuere luctus. Integer et interdum dolor. Nunc egestas euismod congue. Vivamus justo urna, aliquet sit amet leo ac, condimentum tristique urna. Aenean purus ligula, iaculis rutrum rutrum consectetur, efficitur et lectus. Aliquam mattis leo quis dolor tempor, at laoreet ex dictum. Nam neque ligula, volutpat in ultrices ac, sollicitudin quis dui. Sed id sem at ante porta scelerisque. Suspendisse porttitor ac augue sit amet dictum.
+              <br><br>
+              Nam at augue convallis, blandit nisi quis, mollis magna. Nunc laoreet pellentesque accumsan. Quisque dignissim, urna sed facilisis ornare, sem metus vehicula nisl, non pretium nisl leo ac nibh. Sed sed nisl felis. Morbi sed finibus erat. Nulla sit amet dia. Aenean purus ligula, iaculis rutrum rutrum consectetur, efficitur et lectus. Aliquam mattis leo quis dolor tempor, at laoreet ex dictum. Nam neque ligula, volutpat in ultrices ac, sollicitudin quis dui. Sed id sem at ante porta scelerisque. Suspendisse porttitor ac augue sit amet dictum.
+            </p>
+
+            <div class="fairness-code">
+              <p>
+                NÄIDIS!!!! <br>
+                $server_seed = "96f3e04d221ca1b2048cc3b3b980845hah8955a459aj"; <br>
+                $public_seed = "46067058379"; <br>
+                $round = "321"; <br>
+                $hash = hash('sha256', $server_seed . "-" . $public_seed . "-" . $round); <br>
+                $roll = hexdec(substr($hash, 0, 8)) % 15; <br>
+                if ($roll == 0) $roll_colour = 'bonus'; <br>
+                elseif ($roll >= 1 and $roll <= 7) $roll_colour = 'orange'; <br>
+                elseif ($roll >= 8 and $roll <= 14) $roll_colour = 'black'; <br>
+                <br>
+                echo("Roll: $roll\nColour: $roll_colour");
+              </p>
+            </div>
+
+            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus convallis ornare porttitor. Mauris congue mauris nec posuere luctus. Integer et interdum dolor. Nunc egestas euismod congue. Vivamus justo urna, aliquet sit amet leo ac, condimentum tristique urna.</p>
+
+            <table class="table-desktop">
+                <tr>
+                  <th class="dataA">Date</th>
+                  <th class="dataB">Server Secret</th>
+                  <th class="dataD">Round</th>
+                </tr>
+                {% for cb in casebattles %}
+                  {% if not forloop.first %}
+                  
+                    <tr>
+                      <td>{{cb.room_created|date:"d/m/y"}}</td>
+                      <td class="f-m">{{cb.used_server_seed}}</td>
+                      <td>{{cb.round_number}}</td>
+                    </tr>
+                  {% else %}
+                    <tr>
+                      <td>{{cb.room_created|date:"d/m/y"}}</td>
+                      <td class="f-m">{{cb.used_server_seed.hashed_server_seed}}</td>
+                      <td>{{cb.round_number}}</td>
+                    </tr>
+                  {% endif %}
+                {% endfor %}
+                <tr>
+                  <td class="page-count">Page {{ casebattles.number }} of {{ casebattles.paginator.num_pages }}</td>
+                  <td></td>
+                  <td class="page-before">{% if casebattles.has_previous %}<a href="?casebattle={{ casebattles.previous_page_number }}"><img src="{% static 'images/arrow-left.png' %}" alt="Previous"></a>{% endif %}</td>
+                  <td class="page-next">{% if casebattles.has_next %}<a href="?casebattle={{ casebattles.next_page_number }}"><img src="{% static 'images/arrow-right.png' %}" alt="Next"></a>{% endif %}</td>
+                </tr>
+              </table>
+    
+              <table class="table-mobile">
+                {% for cb in casebattles %}
+                  {% if not forloop.first %}
+                    <tr>
+                      <th>Date</th>
+                      <td>{{cb.room_created|date:"d/m/y"}}</td>
+                      <th>Server Secret</th>
+                      <td>{{cb.used_server_seed}}</td>
+                      <th>Round</th>
+                      <td>{{cb.round_number}}</td>
+                    </tr>
+                  {% else %}
+                    <tr>
+                      <th>Date</th>
+                      <td>{{cb.room_created|date:"d/m/y"}}</td>
+                      <th>Server Secret</th>
+                      <td>{{cb.used_server_seed.hashed_server_seed}}</td>
+                      <th>Round</th>
+                      <td>{{cb.round_number}}</td>
+                    </tr>
+                  {% endif %}
+                {% endfor %}
+                <tr class="table-mobile-paginator">
+                  <td class="page-count">Page {{ casebattles.number }} of {{ casebattles.paginator.num_pages }}</td>
+                  <td class="page-next">{% if casebattles.has_previous %}<a class="paginator-previous-button" href="?casebattle={{ casebattles.previous_page_number }}"><img src="{% static 'images/arrow-left.png' %}" alt="Previous"></a>{% endif %}{% if casebattles.has_next %}<a href="?casebattle={{ casebattles.next_page_number }}"><img src="{% static 'images/arrow-right.png' %}" alt="Next"></a>{% endif %}</td>
+                </tr>
+              </table>
+        </div> 
+
+    </div>
+</section>
+
+
+<script>
+    window.onload = function(){
+        if("{{x}}" == 1){
+          document.getElementById('battle-fairness').style.display = 'none'
+          document.getElementById('roulette-fairness').style.display = 'none'
+          document.getElementById('crash-fairness').style.display = 'block'
+        } else if ("{{x}}" == 2){
+          document.getElementById('crash-fairness').style.display = 'none'
+          document.getElementById('roulette-fairness').style.display = 'none'
+          document.getElementById('battle-fairness').style.display = 'block'
+        }
+      }
+
+
+    function openFairness(evt, FairnessGame) {
+      var i, tabcontent, tablinks;
+      tabcontent = document.getElementsByClassName("tabcontent");
+      for (i = 0; i < tabcontent.length; i++) {
+        tabcontent[i].style.display = "none";
+      }
+      tablinks = document.getElementsByClassName("tablinks");
+      for (i = 0; i < tablinks.length; i++) {
+        tablinks[i].className = tablinks[i].className.replace(" active", "");
+      }
+      document.getElementById(FairnessGame).style.display = "block";
+      evt.currentTarget.className += " active";
+    }
+</script>
+
+{% endblock content %}

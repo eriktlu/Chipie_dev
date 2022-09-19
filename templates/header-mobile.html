@@ -1,0 +1,19 @@
+{% load static %}
+
+<header class="header mobile flex" id="header-m">
+    <div class="header-container flex justify-between align-center">
+        <div class="nav-left">
+            <section class="logo"><a href="/"><img src="{% static 'images/chipie-logo-2.svg' %}" alt="Chipie"></a></section>
+        </div>
+        <div class="nav-right">
+            <section class="user-info flex align-center">
+                {% if request.user.is_authenticated %}
+                    <a href="{% url 'deposit:deposit' %}" class="nav-coins flex align-center" ><span id="user_coins">{{coins|floatformat:2}}</span><img src="{% static 'images/coin.svg' %}" alt="Coins"></a>
+                    <a class="nav-profile flex align-center" href="{% url 'profile' %}"><img class="nav-profile-pic" src="{{request.user.social_auth.get.extra_data.player.avatarfull}}" alt="Profile picture"><div class="avatar-overlay"></div></a>
+                {% else %}
+                    <a href="{% url 'social:begin' 'steam' %}" class="steam-login flex align-center"><img src="{% static 'images/steam-icon.svg' %}" alt="Steam"><span>Sign In</span></a>
+                {% endif %}
+            </section>
+        </div>
+    </div>
+</header>

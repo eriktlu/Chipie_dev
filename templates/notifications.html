@@ -1,0 +1,135 @@
+{% load static %}
+
+<div class="global-notifications flex showNotification" id="notifications">
+
+    <section class="notification-image"></section>
+    
+    <section class="notification-message">
+        <div class="notification-header f-m"></div>
+        <div class="notification-message-text f-ss"></div>
+    </section>
+
+    <div class="close-notifications" id="closeNotifications" onclick="closeNotification('notifications')"><img src="{% static 'images/remove.svg' %}" alt="Close"></div>
+
+</div>
+
+{% if messages %}
+    <div class="global-notifications flex showNotification {% for message in messages %}{% if message.tags == 'success' %} notification-success {% else %} notification-error {% endif %}{% endfor %}" id="notificationsMessages" style="display: flex;">
+
+        <section class="notification-image">
+            {% for message in messages %}
+                {% if message.tags == 'success' %} <img src="{% static 'images/success_notif.png' %}" alt="Success"> {% else %} <img src="{% static 'images/error_notif.png' %}" alt="Error"> {% endif %}
+            {% endfor %}
+        </section>
+        
+        <section class="notification-message">
+            <div class="notification-header f-m {% for message in messages %}{% if message.tags == 'success' %} notification-header-success {% else %} notification-header-error {% endif %}{% endfor %}">{% for message in messages %}{% if message.tags == 'success' %}Success!{% else %}Error!{% endif %}{% endfor %}</div>
+            <div class="notification-message-text f-ss ">{% for message in messages %} {% if message.tags == 'success' %} {{message}} {% else %} {{message}} {% endif %} {% endfor %}</div>
+        </section>
+
+        <div class="close-notifications" id="closeNotifications" onclick="closeNotification('notificationsMessages')"><img src="{% static 'images/remove.svg' %}" alt="Close"></div>
+
+    </div>
+{% endif %}
+
+<div class="global-notifications buyer-notification flex" id="buyerNotifications">
+
+    <section class="notification-image"></section>
+    
+    <section class="notification-message">
+        <div class="notification-header f-m"></div>
+        <div class="notification-message-text f-ss"></div>
+    </section>
+
+    <div class="close-notifications" id="closeNotifications" onclick="closeNotification('buyerNotifications')"><img src="{% static 'images/remove.svg' %}" alt="Close"></div>
+
+</div>
+
+<div class="global-notifications seller-notification flex" id="sellerNotifications">
+
+    <div class="skin-notification-item flex-column" id="withdrawItem">
+
+        <div class="skin-notification-top flex">
+            <section class="skin-notification-image flex">
+            </section>
+            <section class="skin-notification-info flex flex-column">
+                <span class="skin-message-header f-ss"></span>
+                <span class="skin-name f-ss"></span>
+                <span class="f-ss skinline-name"></span>
+                <span class="f-xs skin-condition"></span>
+            </section>
+        </div>
+        <div class="skin-notification-bottom flex-column">
+            <a href="{% url 'deposit:deposit-skins' %}" class="f-ss">Click here to complete the trade</a>
+        </div>
+
+        
+    </div>
+
+    <div class="close-notifications" id="closeNotifications" onclick="closeNotification('sellerNotifications')"><img src="{% static 'images/remove.svg' %}" alt="Close"></div>
+
+</div>
+
+
+{% if request.user.is_superuser %}
+    {{ request.user.name|json_script:"json-name" }}
+{% else %}
+    {{ request.user.social_auth.get.extra_data.player.steamid|json_script:"json-name" }}
+{% endif %}
+
+<script>
+
+const notificationSocket = new WebSocket('wss://' + window.location.host + '/ws/notifications/')
+
+const steamid = JSON.parse(document.getElementById('json-name').textContent)
+
+notificationSocket.onmessage = function(e) {
+    const data = JSON.parse(e.data)
+
+    console.log(data)
+
+    if(data.type === 1){
+        notificationContainer = document.getElementById('notifications')
+        notificationContainer.classList.add('notification-success')
+        notificationContainer.querySelector('.notification-message-text').innerHTML = '<span>'+ data.message +'</span>'
+        notificationContainer.querySelector('.notification-image').innerHTML = '<img src="{% static "images/success_notif.png" %}" alt="Success">'
+        notificationContainer.querySelector('.notification-header').innerHTML = '<span>Success!</span>'
+        notificationContainer.querySelector('.notification-header').classList.add('notification-header-success')
+        notificationContainer.style.display = 'flex'
+    }
+
+    if(data.type === 2){
+        notificationContainer = document.getElementById('notifications')
+        notificationContainer.classList.add('notification-error')
+        notificationContainer.querySelector('.notification-message-text').innerHTML = '<span>'+ data.message +'</span>'
+        notificationContainer.querySelector('.notification-image').innerHTML = '<img src="{% static "images/error_notif.png" %}" alt="Error">'
+        notificationContainer.querySelector('.notification-header').innerHTML = '<span>Error!</span>'
+        notificationContainer.querySelector('.notification-header').classList.add('notification-header-error')
+        notificationContainer.style.display = 'flex'
+    }
+
+    if(data.buyer_notifications){
+        notificationContainer = document.getElementById('buyerNotifications')
+        notificationContainer.classList.add('notification-success')
+        notificationContainer.querySelector('.notification-message-text').innerHTML = '<span>'+ data.message +'</span><span>Be sure to send <a href="https://steamcommunity.com/profiles/'+ data.seller_id +'/inventory/#730_2_'+ data.asset_id +'" target="_blank">this</a></span><span>Make trade offer <a href="steamcommunity.com/profiles/'+ data.seller_tradelink +'/tradeoffers/" target="_blank">HERE</a></span'
+        notificationContainer.querySelector('.notification-image').innerHTML = '<img src="{% static "images/remove.svg" %}" alt="Close">'
+        notificationContainer.querySelector('.notification-header').innerHTML = '<span>Success</span>'
+        notificationContainer.style.display = 'flex'
+    }
+
+    if(data.seller_notifications){
+        notificationContainer = document.getElementById('sellerNotifications')
+        notificationContainer.querySelector('.skin-message-header').innerHTML = '<span>'+ data.message +'</span>'
+        notificationContainer.querySelector('.skin-name').innerHTML = '<span>'+ data.item_name +'</span>'
+        notificationContainer.querySelector('.skinline-name').innerHTML = '<span>'+ data.item_skinline_name +'</span>'
+        notificationContainer.querySelector('.skin-condition').innerHTML = '<span>'+ data.item_condition +'</span>'
+        notificationContainer.querySelector('.skin-notification-image').innerHTML = '<img src="https://community.cloudflare.steamstatic.com/economy/image/'+ data.item_image +'" alt="Item">'
+        notificationContainer.style.display = 'flex'
+    }
+}
+
+function closeNotification(elementId) {
+    document.getElementById(elementId).style.display = 'none';
+}
+
+</script>

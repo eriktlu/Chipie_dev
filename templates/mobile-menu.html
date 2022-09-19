@@ -1,0 +1,21 @@
+{% load static %}
+
+<section class="mobile-menu" id="mobMenu">
+    <div class="mobile-menu-container">
+        <div class="mobile-menu-top flex flex-column justify-center align-center">
+            <div class="mobile-menu-buttons flex flex-column">
+                <a class="button mobile-menu-deposit flex justify-center align-center" href="{% url 'deposit:deposit' %}"><span>Deposit</span></a>
+                <a class="button mobile-menu-withdraw flex justify-center align-center" href="{% url 'withdraw:withdraw' %}"><span>Withdraw</span></a>
+            </div>
+            
+            <a class="mobile-menu-link" href="{% url 'fairness' %}">Fairness</a>
+            {% comment %} <a class="mobile-menu-link" href="#">FAQ</a> {% endcomment %}
+            <a class="mobile-menu-link" href="{% url 'privacypolicy' %}">Privay Policy</a>
+        </div>
+        {% if request.user.is_authenticated %}
+        <div class="mobile-menu-bottom flex flex-column justify-center">
+            <a class="mobile-menu-logout" href="{% url 'logout' %}"><img src="{% static 'images/logout.svg' %}" alt="Log Out"><span>Log Out</span></a>
+        </div>
+        {% endif %}
+    </div>
+</section>

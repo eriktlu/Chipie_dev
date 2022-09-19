@@ -1,0 +1,116 @@
+{% extends 'main.html' %}
+
+{% load static %}
+
+{% block content %}
+<script src="https://www.paypal.com/sdk/js?client-id=AYH2KI_u3dPqd9NFjP_oVslrHIOW2JevO9iYvmAyIufhT-Ky_5VxRuPxQQmDuWLSAps5EZJ_BFP5aXSG&currency=EUR"></script>
+
+
+<div class="deposit-paypal">
+  <div class="container">
+    <div class="payment-page flex flex-column align-center justify-center">
+      <form action="" method=POST class="payment-form flex flex-column">
+        {% csrf_token %}
+        <h2 class="payment-title">Deposit with PayPal</h2>
+        <span class="payment-lable">Deposit amount in Euro (€)</span>
+        <div class="payment-calc flex justify-between align-center">
+          <div class="bet-field"><input placeholder="1.00" class="input bet-input f-m" type="number" name="paypal_amount_money" id="paypal_money"><img src="{% static 'images/euro.png' %}" alt="Coin" class="input-coin euro-icon"></div>
+          <span>=</span>
+          <div class="bet-field"><input placeholder="9.00" type="number" name="paypal" id="paypal" class="input bet-input f-m"><img src="{% static 'images/coin.svg' %}" alt="Coin" class="input-coin"></div>
+        </div>
+
+        <div class="flex payment-total"><span class="f-ss">You will receive <span class="f-ss yellow" id="totalReceiveValue">0.00</span></span><img class="coin" src="{% static 'images/coin.svg' %}" alt="Coins"></div>
+    
+        <div id="paypal-button-container" class="payment-submit-paypal"></div>
+      </form>
+    </div>
+  </div>
+</div>
+
+{% comment %} <div id="paypal-button-container"></div> {% endcomment %}
+
+<script>
+
+  document.getElementById('paypal_money').addEventListener('input', function(){
+    document.getElementById('paypal').value = (this.value * 9).toFixed(2)
+    document.getElementById('totalReceiveValue').innerHTML = (this.value * 9).toFixed(2)
+  })
+  
+  document.getElementById('paypal').addEventListener('input', function(){
+    document.getElementById('paypal_money').value = (this.value / 9).toFixed(2)
+    document.getElementById('totalReceiveValue').innerHTML = this.value
+  }) 
+  
+
+    function getCookie(name) {
+        var cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+            break;
+            }
+        }
+        }
+        return cookieValue;
+    }
+    var csrftoken = getCookie('csrftoken');
+
+    paypal.Buttons({ 
+        style: {
+        shape: 'rect',
+        color: 'gold',
+        layout: 'vertical',
+        label: 'paypal',
+
+      },
+      "pppTextInput": {
+        "color": "#f2f2f2",
+    },
+
+      // Sets up the transaction when a payment button is clicked
+      createOrder: function (data, actions) {
+        return actions.order.create({
+          purchase_units: [{
+            "amount": {
+              "currency_code": "EUR",
+              "value": document.getElementById('paypal').value
+            }
+          }]
+        });
+      },
+      // Finalize the transaction after payer approval
+      onApprove: function(data, actions) {
+        var url = "{% url 'deposit:payment-complete' %}"
+        return fetch(url, {
+            method: 'POST',
+            headers: {
+                'content-type': 'application/json',
+                'X-CSRFToken': csrftoken,
+            },
+            body: JSON.stringify({
+                orderID: data.orderID
+            })
+        }).then(function() {
+            location.href = "{% url 'deposit:payment-successful' %}"
+        })
+        // return actions.order.capture().then(function(orderData) {
+        //   // Successful capture! For dev/demo purposes:
+        //       console.log('Capture result', orderData, JSON.stringify(orderData, null, 2));
+        //       var transaction = orderData.purchase_units[0].payments.captures[0];
+        //       alert('Transaction '+ transaction.status + ': ' + transaction.id + '\n\nSee console for all available details');
+
+          // When ready to go live, remove the alert and show a success message within this page. For example:
+          // var element = document.getElementById('paypal-button-container');
+          // element.innerHTML = '';
+          // element.innerHTML = '<h3>Thank you for your payment!</h3>';
+          // Or go to another URL:  actions.redirect('thank_you.html');
+        // });
+      }
+    }).render('#paypal-button-container');
+
+  </script>
+
+{% endblock content %}

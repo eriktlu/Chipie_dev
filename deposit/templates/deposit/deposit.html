@@ -1,0 +1,63 @@
+{% extends 'main.html' %}
+
+{% load static %}
+
+{% block content %}
+
+
+
+<div class="deposit">
+    <div class="container">
+        <div class="deposit-page flex flex-column">
+            <section class="with-dep-section">
+                <div class="with-dep-options flex">
+                    <a href="{% url 'deposit:deposit-skins' %}" class="with-dep-option flex flex-column align-center">
+                        <div class="with-dep-option-top flex align-center justify-center"><img src="{% static 'images/csgo-icon.png' %}" alt="CSGO"></div>
+                        <div class="with-dep-option-bottom flex align-center"><span>CS:GO</span></div>
+                    </a>
+                </div>
+            </section>
+
+            <section class="with-dep-section">
+                <span class="with-dep-options-header">REAL MONEY</span>
+                <div class="with-dep-options flex">
+                    <a href="{% url 'deposit:deposit-paypal' %}" class="with-dep-option flex flex-column align-center">
+                        <div class="with-dep-option-top flex align-center justify-center"><img src="{% static 'images/paypal.png' %}" alt="PayPal"></div>
+                        <div class="with-dep-option-bottom flex align-center"><span>PayPal</span></div>
+                    </a>
+
+                    <a href="{% url 'deposit:deposit-crypto' %}" class="with-dep-option flex flex-column align-center">
+                        <div class="with-dep-option-top flex align-center justify-center"><img src="{% static 'images/bitcoin-big.png' %}" alt="Crypto"></div>
+                        <div class="with-dep-option-bottom flex align-center"><span>Crypto</span></div>
+                    </a>
+                </div>
+            </section>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+{% comment %} Choose deposit option:
+<br>
+<small>Steam</small>
+<br>
+<a href="{% url 'deposit:deposit-skins' %}">CSGO Skins</a>
+<br>
+<br>
+<small>Real Money</small>
+<br>
+<a href="{% url 'deposit:deposit-paypal' %}">PayPal</a>
+<br>
+<br>
+<small>Crypto</small>
+<br>
+<a href="{% url 'deposit:deposit-crypto' %}">Crypto</a> {% endcomment %}
+{% endblock content %}

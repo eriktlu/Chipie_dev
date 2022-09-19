@@ -1,0 +1,16 @@
+{% load static %}
+
+<footer class="footer-nav flex mobile">
+    <div class="footer-nav-container flex justify-between align-center">
+
+
+        <nav class="main-nav flex align-center">
+            <a class="nav-roulette flex align-center {% if request.path == '/' %} active {% endif %}" href="/"><img class="nav-icon-roulette {% if request.path == '/' %} active {% endif %}" src="{% static 'images/roulette-icon.svg' %}" alt="Roulette"></a>
+            <a class="nav-crash flex align-center {% if '/crash/' in request.path %} active {% endif %}" href="{% url 'crash:crash' %}"><img class="nav-icon-crash {% if '/crash/' in request.path %} active {% endif %}" src="{% static 'images/rocket.svg' %}" alt="Crash"></a>
+            <a class="nav-casebattle flex align-center {% if '/casebattle/' in request.path %} active {% endif %}" href="{% url 'casebattle:casebattle' %}"><img class="nav-icon-caseBattle {% if '/casebattle/' in request.path %} active {% endif %}" src="{% static 'images/caseBattle-icon.svg' %}" alt="Case Battle"></a>
+            <a class="nav-menu flex align-center" class="flex align-center" id="mobMenuButton"><img class="nav-icon-menu" src="{% static 'images/hamburger.svg' %}" alt="Menu"></a>
+        </nav>
+
+
+    </div>
+</footer>

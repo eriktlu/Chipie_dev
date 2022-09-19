@@ -1,0 +1,62 @@
+{% extends 'main.html' %}
+
+{% load static %}
+
+{% block content %}
+
+<div class="deposit-crypto">
+    <div class="container">
+        <div class="payment-page flex flex-column align-center justify-center">
+            <form action="" method=POST class="payment-form flex flex-column">
+                {% csrf_token %}
+                <h2 class="payment-title">Deposit with Crypto</h2>
+                <span class="payment-lable">Deposit amount in Euro (€)</span>
+                <div class="payment-calc flex justify-between align-center">
+                    <div class="bet-field"><input placeholder="9.00" class="input bet-input f-m" type="number" name="withdraw_coins_amount" id="deposit_coins"><img src="{% static 'images/coin.svg' %}" alt="Coin" class="input-coin"></div>
+                    <span>=</span>
+                    <div class="bet-field"><input placeholder="1.00" class="input bet-input f-m" type="number" name="withdraw_amount_money" id="deposit_money"><img src="{% static 'images/bitcoin.png' %}" alt="Coin" class="input-coin bitcoin-icon"></div>
+                </div>
+
+                <div class="payment-transaction-address">
+                    <input type="text" name="user_btc_wallet_address" id="bitcoinAddress" placeholder="Enter your bitcoin wallet address.." class="input text-input f-m">
+                </div>
+
+                <div class="flex payment-total"><span class="f-ss">You will receive <span class="f-ss yellow" id="totalReceiveValue">0.00</span></span><img class="coin" src="{% static 'images/coin.svg' %}" alt="Coins"></div>
+      
+                <input type="submit" value="Deposit" class="payment-submit">
+            </form>
+        </div>
+    </div>
+</div>
+
+{% comment %} <form action="" method=POST>
+    {% csrf_token %}
+    <label for="user_coins">Amount of coins to withdraw: </label>
+    <input type="number" name="withdraw_coins_amount" id="user_coins">
+    <label for="wallet">Wallet address: </label>
+    <input type="text" name="user_btc_wallet_address" id="wallet">
+
+    <input type="submit" value="Confirm">
+</form>
+
+<h2>{{ctw}}</h2>
+<h2>{{wa}}</h2>
+<h2>Transaction ID: {{trans_id}}</h2> {% endcomment %}
+
+<script>
+
+    document.getElementById('deposit_money').addEventListener('input', function(){
+      document.getElementById('deposit_coins').value = (this.value * 9).toFixed(2)
+      document.getElementById('totalReceiveValue').innerHTML = (this.value * 9).toFixed(2)
+    })
+    
+    document.getElementById('deposit_coins').addEventListener('input', function(){
+      document.getElementById('deposit_money').value = (this.value / 9).toFixed(2)
+      document.getElementById('totalReceiveValue').innerHTML = this.value
+    })
+    
+    
+    
+    </script>
+
+{% endblock content %}

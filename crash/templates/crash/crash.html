@@ -1,0 +1,473 @@
+{% extends 'main.html' %}
+
+{% load static %}
+
+{% block content %}
+
+<div class="bet-toggle" id="betToggle"><button id="toggleBet"><img src="{% static 'images/Cart Button.png' %}" alt="Bet Area"></button></div>
+
+<section class="crash">
+    <div id="rocketPath"></div>
+    <div class="container">
+        <div class="crash-rocket">
+            <div id="crashRocket">
+                <img class="crash-rocket-img rocket_af_ex" src="{% static 'images/rocket_ship.png' %}" alt="Rocket">
+                <img class="crash-explosion" id="crashExplosion" src="{% static 'images/explosion.png' %}" alt="">
+                
+            </div>
+            <!-- <img class="crash-rocket-line-img" src="{% static 'images/rocket_line.png' %}" alt="Line"> -->
+            
+            <!-- <img class="crash-rocket-line-img" src="{% static 'images/rocket_line.png' %}" alt="Line"> -->
+            <!-- <div></div> -->
+        </div>
+        <div class="crash-container flex">
+            <section class="main-with-sidebar">
+                <section class="crash-game flex">
+                    <div class="crash-bets">
+                        <div class="bet-header flex align-center">
+                            <span class="roulette-ct-bets f-m">Bets <span class="bets-total" id="totalCrashBets">{{total_bets}}</span></span>
+                            <div class="roulette-total-bets flex align-center">
+                                <span class="f-m" id="totalCrashBetsValue">{% if bets_total_value is None %} 0.00 {% else%} {{bets_total_value}} {% endif %}</span>
+                                <img src="{% static 'images/coin.svg' %}" alt="Coin">
+                            </div>
+                        </div>
+                        <div class="cb-player-info" id="crashBets">
+                            {% for bet in bets %}
+                                <div class="crash-bet-card flex align-center" id="{{bet.user.steam_id}}">
+                                    <img src="{{bet.user.avatar}}" alt="User Profile">
+                                    <span class="f-m">{{bet.user.username}}</span>
+                                    <div class="bet-value flex align-center">
+                                        <span class="f-m">{{bet.bet_value}}</span>
+                                        <img src="{% static 'images/coin.svg' %}" alt="Coin">
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+    
+                    <div class="crash-game-field flex align-center justify-center flex-column">
+                        <section class="crash-previous">
+                            <div class="crash-previous-results flex justify-center" id="previousResults">
+                                {% for result in prev_results reversed %}
+                                    <span class="crash-previous-result f-ss">{{result}}x </span>
+                                {% endfor %}
+                            </div>
+                        </section>
+                        <div class="crash-moon flex align-center justify-center">
+                            <div id="crashCashOut">
+                                <img class="crash-moon-image" id="moonImage" src="{% static 'images/moon_test.png' %}" alt="Moon">
+                                <div id="moonOverlay"></div>
+                            </div>
+    
+                            <div class="crash-launch-time flex flex-column" id="timer">
+                                <span>LAUNCHING IN</span>
+                                <span class="crash-time"></span>
+                            </div>
+    
+                            <span class="crash-multiplier" id="multiplier"></span>
+
+                            
+                        </div>
+    
+                        
+
+                        <!-- <img class="test-exp" src="{% static 'images/explosion.png' %}" alt=""> -->
+                    </div>
+                </section>
+            </div>
+        </section>
+    
+        <section class="bet-sidebar crash-sidebar" id="betBar">
+            <div class="bet-sidebar-container flex flex-column">
+                <section class="sidebar-section packages flex flex-column">
+                    <span class="sidebar-title f-ss s-item">Bet Amount</span>
+                    
+                    <div class="bet-field s-item">
+                        <input type="number" name="betValue" id="bet-value" placeholder="1337.69" class="input bet-input f-m">
+                        <img src="{% static 'images/coin.svg' %}" alt="Coin" class="input-coin">
+                    </div>
+                    <div class="bet-value-fixed flex s-item justify-between">
+                        <button class="f-xs add-to-bet" onclick="addToBetAmount(0)">0</button>
+                        <button class="f-xs add-to-bet" onclick="addToBetAmount(0.1)">+0.1</button>
+                        <button class="f-xs add-to-bet" onclick="addToBetAmount(1)">+1</button>
+                        <button class="f-xs add-to-bet" onclick="addToBetAmount(-1)">+1/2</button>
+                        <button class="f-xs add-to-bet" onclick="addToBetAmount(-2)">+2x</button>
+                        <button class="f-xs add-to-bet" onclick="addToBetAmount(-3)">MAX</button>
+                    </div>
+
+                    <section class="sidebar-section flex flex-column sidebar-section-small-p">
+                        <span class="sidebar-title f-ss s-item">Fixed Bet</span>
+
+                        <input type="checkbox" name="fixed-bet" id="fixedBet">
+
+                        <section class="fixed-bet-checked sidebar-section flex flex-column">
+                            <span class="sidebar-title f-ss s-item">Fix Point</span>
+
+                            <div class="bet-field s-item">
+                                <input type="number" name="fixValue" id="fix-value" placeholder="2.32" class="input bet-input f-m">
+                                <img src="{% static 'images/coin.svg' %}" alt="Coin" class="input-coin">
+                            </div>
+                        </section>
+
+                    </section>
+                </section>
+            </div>
+
+            <section class="sidebar-confirm-bet sidebar-section">
+                <input type="submit" id="bet-submit" value="Bet" class="sidebar-place-bet f-m" form="crash-form" onclick="placeBet()" id="crashButton">
+            </section>
+        </section>    
+    </div>
+</section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+{% comment %} <h1>CRASH</h1>
+
+<div class="crash" style="display: flex; justify-content: space-between;">
+    <div class="crash-game-area" style="display: flex; flex-direction: column;">
+        <div class="crash-game">
+            <div id="previous-results">
+                {% for result in prev_results %}
+                    <span>{{result}} &nbsp; </span>
+                {% endfor %}
+            </div>
+            <p id="number"></p>
+            <p id="winner" style="color: green;"></p>
+            <p id="timer"></p>
+        </div>
+    
+        <div class="crash-ui">
+            <div id="crash-bets-form">
+                <div>
+                    <label for="crashBet">Bet Value:</label>
+                    <input type="number" name="crash_bet_amount" id="crashBet" step="0.01" placeholder="10">
+                </div>
+                <div>
+                    <label for="fixedBet">Fixed Point:</label>
+                    <input type="number" name="crash_fixed" id="fixedBet" step="0.1" placeholder="1.5">
+                </div>
+                
+            </div>
+            <div id="button-area">
+                <button onclick="placeBet()">Place Bet</button>
+            </div>
+            
+        </div>
+    </div>
+    <div class="bets">
+        <p>Bets:</p>
+        <div id="crash-bets" style="width: 400px;">
+            {% for bet in bets %}
+                <span>{{bet.user.username}}: {{bet.bet_value}}</span>
+            {% endfor %}
+        </div>
+    </div>
+</div> {% endcomment %}
+
+
+<script>
+    const crashSocket = new WebSocket('wss://' + window.location.host + '/ws/game/crash/')
+    const crashBetSocket = new WebSocket('wss://' + window.location.host + '/ws/game/crash_bet/')
+
+
+    let elem = document.querySelector('#crashRocket');
+    let start;
+
+    // function debug(timestamp) {
+    //     if (start === undefined)
+    //         start = timestamp;
+    //     const elapsed = timestamp - start;
+    //     let rect = elem.getBoundingClientRect();
+    //     console.log(elapsed)
+    //     if(elapsed % 20 == 0){
+    //         document.body.insertAdjacentHTML("beforeBegin",'<d style="top:'+(rect.y + rect.height/2)+'px;left:'+(rect.x + rect.width/2)+'px;"></d>')
+    //     }
+        
+
+    //     if (elapsed < 8000) { 
+    //         window.requestAnimationFrame(debug);
+    //     }
+    // }
+
+    var crashBets = []
+    let id;
+
+    async function rocketRoute(endTime){
+        let rect = elem.getBoundingClientRect();
+        console.log(rect.y)
+        document.getElementById('rocketPath').innerHTML += '<d style="top:'+(rect.top + rect.height/2 + window.scrollY)+'px;left:'+(rect.left + rect.width/2)+'px;"></d>'
+        var elapsedTime = endTime - Date.now();
+        if(elapsedTime <= 0){
+                clearInterval(id);
+            }
+    }
+
+    // window.onload = function() {
+    //     console.log('started')
+    //     // window.requestAnimationFrame(debug);
+    //     let id = setInterval(test, 100)
+    // }
+
+    
+
+    const sleep = ms => {
+        return new Promise(resolve => setTimeout(resolve, ms))
+    }
+
+    added = false
+
+    crashSocket.onmessage = async function(e) {
+        const data = JSON.parse(e.data)
+        // document.getElementById('crash-bets').innerHTML = ''
+        // bets_update_ui(data.bets)
+
+        if(data.state){
+            if(parseFloat(data.state) === 1.01){
+                // document.getElementById('button-area').innerHTML = '<button onclick="cashOut()">Cash Out</button>'
+            }
+            document.getElementById('timer').style.display = 'none'
+            document.getElementById('multiplier').style.display = 'block'
+            document.getElementById('multiplier').innerHTML =  '<span class="multiplier-text">'+data.state + 'x</span>' + '</br><span class="f-xs">Click to cash out!</span>'
+            if(!added){
+                document.getElementById('crashRocket').classList.remove('crash_rocket_b_ex')
+                document.querySelector('#crashRocket .crash-rocket-img').classList.add('rocket')
+                document.getElementById('crashExplosion').style.animation = ''
+                document.getElementById('crashRocket').classList.add('crash_rocket_animation')
+                document.querySelector('#crashRocket .crash-rocket-img').classList.add('crash-rocket-img-animation');
+                document.getElementById('bet-submit').classList.add('button-disabled');
+                
+                document.getElementById('moonOverlay').classList.remove('moon-image-overlay')
+                document.getElementById('moonImage').classList.add('moon-green')
+                added = true
+
+                endTime = new Date(Date.now() + 8000);
+                id = setInterval(rocketRoute, 100, endTime)
+            }
+            
+        }
+
+        if(data.prev_results){
+            document.getElementById('previousResults').innerHTML = ''
+
+            arr = []
+
+            for (var key in data.prev_results){
+                arr.push(key)
+            }
+
+            for(i = arr.length-1; i>=0; i--){
+                document.getElementById('previousResults').innerHTML += '<span class="crash-previous-result f-m">' + data.prev_results[arr[i]] + 'x </span>'
+            }
+        }
+
+        if(data.timer){
+            const resultTime = 19.9
+            const timerTime = 15
+
+            if(parseFloat(data.timer) === resultTime){
+                if(added){
+                    document.getElementById('moonImage').classList.remove('moon-green')
+                    document.getElementById('moonImage').classList.add('moon-red')
+                    
+                    document.querySelector('#crashRocket .crash-rocket-img').classList.remove('crash-rocket-img-animation');
+                    document.querySelector('#crashRocket .crash-rocket-img').classList.remove('rocket')
+                    document.getElementById('crashExplosion').style.animation = 'explosion 0.35s ease'
+                    await sleep(350)
+                    document.getElementById('crashRocket').classList.add('crash_rocket_b_ex')
+                    document.getElementById('crashRocket').classList.remove('crash_rocket_animation')
+                    
+                    
+                    clearInterval(id)
+
+                    document.getElementById('bet-submit').classList.remove('button-disabled');
+                    document.getElementById('rocketPath').innerHTML = ''
+                    added = false
+
+                    document.getElementById('totalCrashBetsValue').innerHTML = 0
+                    document.getElementById('totalCrashBets').innerHTML = 0
+                    crashBetsTotal = 0
+                    totalBets = 0
+                    document.getElementById('crashBets').innerHTML = ''
+                }
+
+                
+                // document.getElementById('button-area').innerHTML = '<button onclick="placeBet()">Place Bet</button>'
+            }
+            
+            // if(parseFloat(data.timer) <= resultTime && parseFloat(data.timer) > timerTime ){
+            //     showResult(data.result)
+            // }
+
+            if(parseFloat(data.timer) === timerTime ){
+                // bets = document.getElementById('crash-bets')
+                // bets.innerHTML = ''
+                
+            }
+
+            if(parseFloat(data.timer) <= timerTime ){
+                document.getElementById('multiplier').style.display = 'none'
+
+                showTimer(data.timer)
+            }
+        }
+
+        // async function showResult(result){
+        //     document.getElementById('winner').innerHTML = result
+        // }
+
+        async function showTimer(time) {
+            document.getElementById('moonOverlay').classList.add('moon-image-overlay')
+            document.getElementById('moonImage').classList.remove('moon-red')
+            // document.getElementById('winner').innerHTML = ''
+            document.getElementById('timer').style.display = 'flex'
+            document.querySelector('#timer .crash-time').innerHTML = time
+        }
+    }
+
+    // async function bets_update_ui(bets) {
+    //     const steamid = '{{request.user.social_auth.get.extra_data.player.steamid}}'
+    //     for(const key in bets){
+    //         if(bets[key].stop_point === 'Won' || bets[key].stop_point === true){
+    //             document.getElementById('crash-bets').innerHTML += '<span style="background: green">' + bets[key].username + ': '+ bets[key].bet_value + ' ' + bets[key].r_stop +'</span>'
+    //         } else if(bets[key].stop_point === false || bets[key].stop_point == 'Crashed') {
+    //             document.getElementById('crash-bets').innerHTML += '<span style="background: red">' + bets[key].username + ': '+ bets[key].bet_value + ' Crashed</span>'
+    //         } else {
+    //             document.getElementById('crash-bets').innerHTML += '<span>' + bets[key].username + ': '+ bets[key].bet_value + ' ' + bets[key].stop_point +'</span>'
+    //         }
+            
+    //         if(String(steamid) === bets[key].steamid){
+    //             if(bets[key].stop_point === 'Won' || bets[key].stop_point === true){
+    //                 console.log(bets[key].bet_value * bets[key].r_stop)
+    //             }
+    //             if(bets[key].stop_point === false || bets[key].stop_point == 'Crashed'){
+    //                 console.log('Crashed')
+    //             }
+                
+    //             // console.log(typeof(bets[key].stop_point))
+    //         }
+    //     }
+    // }
+
+    async function placeBet() {
+        betValue = document.getElementById('bet-value').value
+        fixed = document.getElementById('fixedBet').checked
+
+        if(betValue > 0 && countDecimals(betValue) < 3){
+            if(fixed){
+                fixedValue = document.getElementById('fix-value').value
+                if(fixedValue > 1 && countDecimals(fixedValue) < 3) {
+                    crashBetSocket.send(JSON.stringify({
+                        'user_id': '{{request.user.social_auth.get.extra_data.player.steamid}}',
+                        'bet_value': betValue,
+                        'fixed_value': fixedValue
+                    }))
+                } else {
+                    console.log('Wrong value')
+                }
+                
+            } else {
+                crashBetSocket.send(JSON.stringify({
+                    'user_id': '{{request.user.social_auth.get.extra_data.player.steamid}}',
+                    'bet_value': betValue,
+                }))
+            }
+        }
+    }
+
+    document.getElementById('crashCashOut').onclick = function() {
+        console.log('try to cash out')
+        crashBetSocket.send(JSON.stringify({
+            'user_id': '{{request.user.social_auth.get.extra_data.player.steamid}}',
+            'cash_out': 1,
+        }))
+
+        update_coins()
+    }
+
+    async function cashOut() {
+        // document.getElementById('button-area').innerHTML = '<button disabled>Cash Out</button>'
+        crashBetSocket.send(JSON.stringify({
+            'user_id': '{{request.user.social_auth.get.extra_data.player.steamid}}',
+            'cash_out': 1,
+        }))
+
+        update_coins()
+    }
+
+    var countDecimals = function (value) { 
+        if ((value % 1) != 0) 
+            return value.toString().split(".")[1].length;  
+        return 0;
+    }
+
+    var crashBetsTotal = Number('{% if bets_total_value is None %} 0 {% else%} {{bets_total_value}} {% endif %}'), totalBets = Number('{{total_bets}}')
+
+    crashBetSocket.onmessage = async function(e) {
+        const data = JSON.parse(e.data)
+
+        if(data.bet_value){
+            crast_bets = data.crash_bets
+            bets = document.getElementById('crashBets')
+            // var newBet = '<div class="cb-bet-card flex align-center" style="display: none;"><img src="{{request.user.social_auth.get.extra_data.player.avatarfull}}" alt="User Profile"><span class="f-m">'+ data.username +'</span><div class="bet-value flex align-center"><span class="f-m">'+ data.bet_value +'</span><img src="{% static "images/coin.svg" %}" alt="Coin"></div></div>'
+            // bets.innerHTML = newBet
+            $('#crashBets').append('<div class="cb-bet-card flex align-center" id="'+data.steam_id+'"></div>')
+            $('#crashBets #'+data.steam_id+'').append('<img src="'+data.avatar+'" alt="User Profile"><span class="f-m">'+ data.username +'</span><div class="bet-value flex align-center"><span class="f-m">'+ data.bet_value +'</span><img src="{% static "images/coin.svg" %}" alt="Coin"></div>').hide().slideDown()
+            document.getElementById('totalCrashBetsValue').innerHTML = crashBetsTotal + Number(data.bet_value)
+            document.getElementById('totalCrashBets').innerHTML = totalBets + 1
+            
+            // for(const key in crast_bets){
+            //     console.log(crast_bets[key].username)
+            //     bets.innerHTML += '<span>'+ crast_bets[key].username + ': '+ crast_bets[key].bet_value +'</span>' 
+            // }
+            // console.log(typeof(data.crash_bets))
+
+            // if(data.fixed_value){
+            //     console.log('Fixed value Bet')
+            // } else {
+            //     console.log('Regular bet')
+            // }
+
+            update_coins()
+        }
+
+        if(data.won_steamid){
+            document.getElementById(''+data.won_steamid+'').classList.add('crash-won');
+        }
+
+        if(data.test){
+            console.log('Betting failed')
+        }
+    }
+
+
+    function update_coins() {
+        $.ajax({
+            method: "POST",
+            headers: { "X-CSRFToken": token },
+            url: "/api/coins/",
+            data: {},
+            success: function(data) {
+                console.log(data) // check out how data is structured
+
+                // Update the coin amount
+                document.querySelector('#user_coins').innerHTML = data.coins
+            }
+        })
+    };
+    
+
+    
+</script>
+
+{% endblock content %}

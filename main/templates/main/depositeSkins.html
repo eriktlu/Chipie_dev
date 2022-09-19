@@ -1,0 +1,35 @@
+{% extends 'main.html' %}
+
+{% block content %}
+
+<div>
+    <h1>Bot Inventory</h1>
+
+
+    {% if steam_name %}
+        <a href="https://steamcommunity.com/id/{{steam_name}}/tradeoffers/" target="_blank">Trade Link</a>
+    {% endif %}
+
+    <form action="" method="POST">
+        {% csrf_token %}
+        <div id="inventory" style="display: flex; flex-wrap: wrap;">
+        {% for item in inventory %}
+            <!-- <input type="hidden" name="item_name" value="{{item.2}}"> -->
+            <input type="checkbox" name="item_name" id="{{forloop.counter}}" value="{{item.0}}">
+            <label class="selectable" for="{{forloop.counter}}">
+                
+                <img src="https://community.cloudflare.steamstatic.com/economy/image/{{item.1}}" alt="" style="height: 100px;">
+                <span>{{item.0}}</span>
+                <span>{{item.2}}$</span>
+                
+                <!-- {{item.3}} -->
+            </label>
+        {% endfor %}
+        </div>
+        <input type="text" name="trade_url" required>
+        <input type="submit" value="Submit">
+    </form>
+</div>
+
+
+{% endblock content %}

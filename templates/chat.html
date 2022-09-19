@@ -1,0 +1,94 @@
+<section class="chat" id="chat">
+    <div class="chat-container-f" id="chatBox">
+        <div style="overflow: hidden;">
+            <div class="chat-main">
+                <div id="chat-messages">
+                    {% for m in chatMessages reversed %}
+
+                    <section class="chat-message flex">
+                        <div class="message-avatar">
+                            <img src="{{m.name.avatar}}" alt="Player avatar">
+                        </div>
+                        <div class="message-body flex flex-column">
+                            <span class="message-header">{{ m.name }}</span>
+                            <span class="message-content">{{ m.content }}</span>
+                        </div>
+                    </section>
+                    
+                    <!-- <p class="chat-message"><img src="{{m.name.avatar}}" alt="Player avatar"><span>{{ m.name }}</span> <span>{{ m.content }}</span></p> -->
+                    
+                    {% endfor %}
+                </div>
+            </div>
+    
+            <div class="chat-send">
+                <div class="chat-inner-container">
+                    <input class="input-s chat-input f-ss" placeholder="Type message ..." type="text" id="chat-message-input">
+                </div>
+            </div>
+        </div>
+        
+
+
+
+    </div>
+</section>
+
+
+{% if request.user.is_superuser %}
+    {{ request.user.name|json_script:"json-name" }}
+{% else %}
+    {{ request.user.social_auth.get.extra_data.player.steamid|json_script:"json-name" }}
+{% endif %}
+
+{{ request.user.username|json_script:"json-username" }}
+
+<script>
+    const chatSocket = new WebSocket('wss://' + window.location.host + '/ws/chat/')
+
+    const name = JSON.parse(document.getElementById('json-name').textContent)
+    const userName = JSON.parse(document.getElementById('json-username').textContent)
+
+    window.onload = function() {
+        scrollToBottom()
+    }
+
+    chatSocket.onmessage = function(e) {
+        console.log(e);
+
+        const data = JSON.parse(e.data)
+
+        if(data.message) {
+            document.querySelector('#chat-messages').innerHTML += '<section class="chat-message flex"><div class="message-avatar"><img src="'+data.avatar+'" alt="Player avatar"></div><div class="message-body flex flex-column"><span class="message-header">'+data.username+'</span><span class="message-content">'+data.message+'</span></div></section>'
+        } else {
+            alert('The message is empty!')
+        }
+
+        scrollToBottom()
+    }
+
+    function scrollToBottom() {
+        let objDiv = document.getElementById("chat-messages")
+        objDiv.scrollTop = objDiv.scrollHeight
+    }
+
+    chatSocket.onclose = function(e) {
+        console.log('The socket closed unexpectedly');
+    }
+
+    const chatInput = document.querySelector("#chat-message-input");
+    chatInput.addEventListener("keyup", (e) => {
+        if (event.key === "Enter") {
+            const messageInputDom = document.querySelector('#chat-message-input')
+            const message = messageInputDom.value
+
+            chatSocket.send(JSON.stringify({
+                'message': message,
+                'name': name,
+                'username': userName
+            }))
+
+            messageInputDom.value = ''
+        }
+    });
+</script>

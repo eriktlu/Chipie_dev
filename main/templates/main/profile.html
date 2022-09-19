@@ -1,0 +1,221 @@
+{% extends 'main.html' %}
+
+{% load static %}
+
+{% block content %}
+
+<section class="profile container">
+    <div class="profile-content">
+
+        <h1>Profile</h1>
+
+        <div class="tab tab-desktop">
+            <button class="tablinks active" onclick="openProfile(event, 'profile-account')">Account</button>
+            <button class="tablinks" onclick="openProfile(event, 'profile-transactions')">Transactions</button>
+        </div>
+
+        <div class="tab tab-mobile">
+          <button class="tablinks active" onclick="openProfile(event, 'profile-account')"><img src="{% static 'images/account-icon.svg' %}" class="profile-account-tablink-mobile"></button>
+          <button class="tablinks" onclick="openProfile(event, 'profile-transactions')"><img src="{% static 'images/transactions-icon.svg' %}" class="profile-transactions-tablink-mobile"></button>
+        </div>
+          
+        <div id="profile-account" class="tabcontent">
+          <p>Account content</p>
+          <form action="{% url 'profile' %}" method="post">
+            {% csrf_token %}
+            <div class="profile-trade-link profile-item">
+                <label class="f-m" for="user_trade_link">Trade Link:</label>
+                <input type="text" name="user_trade_link" id="tradeLink" placeholder="Enter trade link.." class="input text-input f-m" value="{{trade_link}}">
+            </div>
+            <div class="profile-client-seed profile-item">
+              <label class="f-m" for="user_client_seed">Client Seed:</label>
+              <input type="text" name="user_client_seed" id="clientSeed" placeholder="Enter your prefered client seed.." class="input text-input f-m" value="{{client_seed}}">
+            </div>
+
+            <input type="submit" value="Save Changes" class="sidebar-place-bet">
+          </form>
+        </div>
+        
+        <div id="profile-transactions" class="tabcontent"> 
+
+          <table class="table-desktop">
+            <tr>
+              <th class="dataA">ID</th>
+              <th class="dataB">Amount</th>
+              <th class="dataC">Option</th>
+              <th class="dataD">Date</th>
+            </tr>
+            {% for transaction in t_page_obj %}
+            <tr>
+              <td>{{transaction.id}}</td>
+              <td>{% if transaction.transaction_value_gold > 0 %}+{% endif %}{{transaction.transaction_value_gold}}€</td>
+              <td>{{transaction.payment_option}}</td>
+              <td>{{transaction.created|date:"d/m/y"}}</td>
+            </tr>
+            {% endfor %}
+            <tr>
+              <td class="page-count">Page {{ t_page_obj.number }} of {{ t_page_obj.paginator.num_pages }}</td>
+              <td></td>
+              <td class="page-before">{% if t_page_obj.has_previous %}<a href="?transaction={{ t_page_obj.previous_page_number }}"><img src="{% static 'images/arrow-left.png' %}" alt="Previous"></a>{% endif %}</td>
+              <td class="page-next">{% if t_page_obj.has_next %}<a href="?transaction={{ t_page_obj.next_page_number }}"><img src="{% static 'images/arrow-right.png' %}" alt="Next"></a>{% endif %}</td>
+            </tr>
+          </table>
+
+          <table class="table-mobile">
+            {% for transaction in t_page_obj %}
+              <tr>
+                <th>Date</th>
+                <td>{{transaction.created|date:"d/m/y"}}</td>
+                <th>Option</th>
+                <td>{{transaction.payment_option}}</td>
+                <th>Value</th>
+                <td>{% if transaction.transaction_value_gold > 0 %}+{% endif %}{{transaction.transaction_value_gold}}€</td>
+                <th>ID</th>
+                <td>{{transaction.id}}</td>
+              </tr>
+            {% endfor %}
+            <tr class="table-mobile-paginator">
+              <td class="page-count">Page {{ t_page_obj.number }} of {{ t_page_obj.paginator.num_pages }}</td>
+              <td class="page-next">{% if t_page_obj.has_previous %}<a class="paginator-previous-button" href="?transaction={{ t_page_obj.previous_page_number }}"><img src="{% static 'images/arrow-left.png' %}" alt="Previous"></a>{% endif %}{% if t_page_obj.has_next %}<a href="?transaction={{ t_page_obj.next_page_number }}"><img src="{% static 'images/arrow-right.png' %}" alt="Next"></a>{% endif %}</td>
+            </tr>
+          </table>
+
+          <table class="table-desktop">
+            <tr>
+              <th class="dataA">Round Number</th>
+              <th class="dataB">Result</th>
+              <th class="dataC">Game</th>
+              <th class="dataD">Date</th>
+            </tr>
+            {% for transaction in page_obj %}
+            <tr>
+              <td>{{transaction.round_number}}</td>
+              <td>{{transaction.result}}</td>
+              <td>{{transaction.game}}</td>
+              <td>{{transaction.date|date:"d/m/y"}}</td>
+            </tr>
+            {% endfor %}
+            <tr>
+              <td class="page-count">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</td>
+              <td></td>
+              <td class="page-before">{% if page_obj.has_previous %}<a href="?page={{ page_obj.previous_page_number }}"><img src="{% static 'images/arrow-left.png' %}" alt="Previous"></a>{% endif %}</td>
+              <td class="page-next">{% if page_obj.has_next %}<a href="?page={{ page_obj.next_page_number }}"><img src="{% static 'images/arrow-right.png' %}" alt="Next"></a>{% endif %}</td>
+            </tr>
+          </table>
+          <!-- <div class="pagination">
+            <span class="step-links">
+                {% if page_obj.has_previous %}
+                    <a href="?page=1">&laquo; first</a>
+                    <a href="?page={{ page_obj.previous_page_number }}">previous</a>
+                {% endif %}
+        
+                <span class="current">
+                    Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+                </span>
+        
+                {% if page_obj.has_next %}
+                    <a href="?page={{ page_obj.next_page_number }}">next</a>
+                    <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
+                {% endif %}
+            </span>
+        </div> -->
+
+          <table class="table-mobile">
+            {% for transaction in page_obj %}
+              <tr>
+                <th>Date</th>
+                <td>{{transaction.date|date:"d/m/y"}}</td>
+                <th>Game</th>
+                <td>{{transaction.game}}</td>
+                <th>Result</th>
+                <td>{{transaction.result}}</td>
+                <th>Round Number</th>
+                <td>{{transaction.round_number}}</td>
+              </tr>
+            {% endfor %}
+            <tr class="table-mobile-paginator">
+              <td class="page-count">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</td>
+              <td class="page-next">{% if page_obj.has_previous %}<a class="paginator-previous-button" href="?page={{ page_obj.previous_page_number }}"><img src="{% static 'images/arrow-left.png' %}" alt="Previous"></a>{% endif %}{% if page_obj.has_next %}<a href="?page={{ page_obj.next_page_number }}"><img src="{% static 'images/arrow-right.png' %}" alt="Next"></a>{% endif %}</td>
+            </tr>
+          </table>
+          
+
+        <!-- </div> -->
+
+            <!-- <h1>Trade offers</h1>
+
+            {% for offer in trade_offers %}
+
+                <div>
+                    <p>Offer id: {{offer.offer_id}}</p>
+                    <p>Offer state: {{offer.offer_state}}</p>
+                    <p>Offer message: {{offer.offer_message}}</p>
+                    <p>Offer value: {{offer.offer_value}}</p>
+                    <p>Offer date: {{offer.date_added}}</p>
+                </div>
+
+            {% endfor %} -->
+            
+            <!-- <h2>Roulette</h2>
+            <h4>Roulette bet history:</h4>
+            {% for bet in roulette_bets %}
+            <p>{% if bet.win is True %} Win {% else %} Lose {% endif %}: {{bet.bet_value}}$; Round nr: {{bet.round.round_number}}; Chosen color: {{bet.bet_choice}}; Color won: {{bet.round.roll_color}}</p>
+            {% endfor %}
+            
+
+
+            <h2>Crash</h2>
+            {% for bet in crash_bets %}
+                <p>{% if bet.win is True %} Win: {% comment %}{% multiply bet.bet_value bet.stop_point %}{% endcomment %} {% else %} Lose: {{bet.bet_value}} {% endif %}$; Round nr: {{bet.crash_round.round_number}}; Stop point: {{bet.stop_point}}; Crash point: {{bet.crash_round.result}}; Bet type: {{bet.bet_choice}}</p>
+            {% endfor %}
+
+
+            <h2>Case Battle</h2>
+            {% for bet in cb_bets %}
+                <p>{% if bet.battle_result == 'Win' %} {% comment %}{% divide bet.room.battle_result_value bet.room.winner_count %}{% endcomment %}$ {% else %} {{bet.battle_result}}: {{bet.room.package.price}}$ {% endif %}</p>
+            {% endfor %}
+            <h4>Client seed</h4>
+            <form action="{% url 'profile' %}" method="POST">
+                {% csrf_token %}
+                <input type="text" name="client_seed" id="client-seed" value="{{client_seed}}">
+                <input type="submit" value="Change Seed">
+            </form>
+
+            <h2>Offers to accept</h2>
+                {% for item in depositedItems %}
+
+                <div>
+                    <p>Item to send: {{item.item_name}}</p>
+                    <p>Asset id: {{item.asset_id}}</p>
+                    <p>Trade link: <a href="{{item.buyer_trade_link}}" target="blank">{{item.buyer_trade_link}}</a></p>
+                </div>
+
+                {% endfor %}
+
+        </div> -->
+    </section>
+
+    <script>
+      window.onload = function(){
+        if("{{x}}" === 'True'){
+          document.getElementById('profile-transactions').style.display = 'block'
+          document.getElementById('profile-account').style.display = 'none'
+        }
+      }
+
+        function openProfile(evt, ProfileName) {
+          var i, tabcontent, tablinks;
+          tabcontent = document.getElementsByClassName("tabcontent");
+          for (i = 0; i < tabcontent.length; i++) {
+            tabcontent[i].style.display = "none";
+          }
+          tablinks = document.getElementsByClassName("tablinks");
+          for (i = 0; i < tablinks.length; i++) {
+            tablinks[i].className = tablinks[i].className.replace(" active", "");
+          }
+          document.getElementById(ProfileName).style.display = "block";
+          evt.currentTarget.className += " active";
+        }
+    </script>
+
+{% endblock content %}
